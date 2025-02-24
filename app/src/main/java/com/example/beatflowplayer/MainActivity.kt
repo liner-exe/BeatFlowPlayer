@@ -1,56 +1,47 @@
 package com.example.beatflowplayer
 
-import android.Manifest
-import android.app.Activity
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.core.app.ActivityCompat
-import com.example.beatflowplayer.ui.navigation.AppNavigation
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.beatflowplayer.ui.theme.BeatFlowPlayerTheme
-import com.example.beatflowplayer.viewmodel.PlayerViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
-fun requestPermissions(activity: Activity) {
-    val permissionRequestCode = 123
-    val permissionsToRequest = mutableListOf<String>()
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        permissionsToRequest.add(Manifest.permission.READ_MEDIA_AUDIO)
-    } else {
-        permissionsToRequest.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
-
-    ActivityCompat.requestPermissions(
-        activity,
-        permissionsToRequest.toTypedArray(),
-        permissionRequestCode
-    )
-}
-
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: PlayerViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             BeatFlowPlayerTheme {
-                Main()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "Android",
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                }
             }
         }
-
-        requestPermissions(this)
     }
 }
 
 @Composable
-fun Main() {
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
     BeatFlowPlayerTheme {
-        AppNavigation()
+        Greeting("Android")
     }
 }

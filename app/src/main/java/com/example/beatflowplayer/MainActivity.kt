@@ -1,14 +1,13 @@
 package com.example.beatflowplayer
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,9 +22,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderColors
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,12 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -49,29 +44,43 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.beatflowplayer.ui.theme.BeatFlowPlayerTheme
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.palette.graphics.Palette
 import com.example.beatflowplayer.ui.theme.BeatFlowPlayerTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-import androidx.palette.graphics.Palette
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            BeatFlowPlayerTheme {
-                Surface {
-                    AudioPlayerUI()
-                }
-            }
+            Main()
+        }
+    }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun Main() {
+    val navController = rememberNavController()
+
+    Scaffold {
+        NavHost(
+            navController = navController,
+            startDestination = Screen.PlayerScreen.route
+        ) {
+            composable(Screen.PlayerScreen.route) { AudioPlayerUI(navController) }
+            composable(Screen.TracksScreen.route) { TracksUI(navController) }
         }
     }
 }
 
 @Composable
-fun AudioPlayerUI() {
+fun AudioPlayerUI(navController: NavController) {
     val context = LocalContext.current
 
     var sliderPosition by remember { mutableFloatStateOf(0f) }
@@ -79,7 +88,7 @@ fun AudioPlayerUI() {
     val mediaplayer = remember { MediaPlayer.create(context, R.raw.nominalo) }
     var accentColor by remember { mutableStateOf<Color?>(null) }
 
-    var imageResId = R.drawable.nominalo
+    val imageResId = R.drawable.nominalo
 
     LaunchedEffect(imageResId) {
         val bitmap = withContext(Dispatchers.IO) {
@@ -118,10 +127,11 @@ fun AudioPlayerUI() {
                     .padding(10.dp)
             )
             {
-                IconButton(onClick = {}) {
+                IconButton(onClick = { navController.navigate(Screen.TracksScreen.route) }) {
                     Icon(
                         painter = painterResource(id = R.drawable.arrow_down),
-                        contentDescription = "Collapse"
+                        contentDescription = "Collapse",
+                        tint = Color.White
                     )
                 }
 
@@ -130,7 +140,8 @@ fun AudioPlayerUI() {
                     fontSize = 16.sp,
                     style = TextStyle(
                         fontWeight = FontWeight.W500
-                    )
+                    ),
+                    color = Color.LightGray
                 )
             }
 
@@ -153,7 +164,7 @@ fun AudioPlayerUI() {
 
                 Text(
                     text = "NOMINALO",
-                    color = Color.DarkGray,
+                    color = Color.White,
                     fontSize = 40.sp,
                     style = TextStyle(
                         fontWeight = FontWeight.SemiBold
@@ -164,7 +175,7 @@ fun AudioPlayerUI() {
 
                 Text(
                     text = "MORGENSHTERN",
-                    color = Color.Gray,
+                    color = Color.LightGray,
                     fontSize = 18.sp,
                     style = TextStyle(
                         fontWeight = FontWeight.W500
@@ -186,11 +197,11 @@ fun AudioPlayerUI() {
                 )
                 {
                     Text(
-                        text = "0:00"
+                        text = "0:00", color = Color.LightGray
                     )
 
                     Text(
-                        text = "2:11"
+                        text = "2:11", color = Color.LightGray
                     )
                 }
 
@@ -212,8 +223,9 @@ fun AudioPlayerUI() {
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.shuffle),
-                            contentDescription = "Previous",
-                            modifier = Modifier.size(100.dp)
+                            contentDescription = "Shuffle",
+                            modifier = Modifier.size(36.dp),
+                            tint = Color.White
                         )
                     }
 
@@ -269,7 +281,9 @@ fun AudioPlayerUI() {
                         Icon(
                             painter = painterResource(id = R.drawable.next),
                             contentDescription = "Next",
-                            modifier = Modifier.size(36.dp).background(color= Color.White)
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(color = Color.LightGray)
                         )
                     }
 
@@ -283,9 +297,10 @@ fun AudioPlayerUI() {
                             .background(color = Color.Transparent)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.loop),
+                            painter = painterResource(id = R.drawable.repeat),
                             contentDescription = "Previous",
-                            modifier = Modifier.size(64.dp)
+                            modifier = Modifier.size(36.dp),
+                            tint = Color.White
                         )
                     }
                 }
@@ -294,10 +309,38 @@ fun AudioPlayerUI() {
     }
 }
 
+@Composable
+fun TracksUI(navController: NavController) {
+    val tracks = listOf(
+        Track(1, "OLALA", "MORGENSTERN"),
+        Track(2, "ARISTOCRAT", "MORGENSTERN"),
+        Track(3, "HUBLOT", "MORGENSTERN"),
+        Track(4, "NOMINALO", "MORGENSTERN"),
+        Track(5, "GTA", "MORGENSTERN"),
+        Track(6, "ПАПИН ТАНК", "MORGENSTERN"),
+        Track(7, "DINERO", "MORGENSTERN"),
+        Track(8, "МАНИЯ", "MORGENSTERN"),
+        Track(9, "Я НА ТАБЛАХ", "MORGENSTERN"),
+        Track(10, "КОГДА НАС ОТПУСТИТ", "MORGENSTERN"),
+        Track(11, "PULL UP", "MORGENSTERN"),
+        Track(12, "Я КОГДА-НИБУДЬ УЙДУ", "MORGENSTERN"),
+    ).also {
+        TrackList(tracks = it)
+    }
+}
+
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewAudioPlayerUI() {
     BeatFlowPlayerTheme {
-        AudioPlayerUI()
+        AudioPlayerUI(navController = rememberNavController())
     }
 }
+
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewTracksUI() {
+//    BeatFlowPlayerTheme {
+//        TracksUI(navController = rememberNavController())
+//    }
+//}

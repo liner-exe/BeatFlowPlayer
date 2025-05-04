@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "BeatFlowPlayer"
 include(":app")
- 
+include(":data")
+include(":domain")

@@ -1,9 +1,12 @@
 package com.example.beatflowplayer.domain.model
 
 import androidx.core.net.toUri
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity(tableName = "tracks")
 data class TrackEntity(
-    val id: Long,
+    @PrimaryKey val id: Long,
     val title: String,
     val artist: String,
     val duration: Long,

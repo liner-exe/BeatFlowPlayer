@@ -1,4 +1,4 @@
-package com.example.beatflowplayer
+package com.example.beatflowplayer.ui.screens.tracks_screen
 
 data class Track(
     val id: Int,

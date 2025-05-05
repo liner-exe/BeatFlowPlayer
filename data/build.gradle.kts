@@ -1,10 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.example.data"
+    namespace = "com.example.beaflowplayer.data"
     compileSdk = 35
 
     defaultConfig {
@@ -33,7 +35,18 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
+
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     implementation(libs.androidx.core.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

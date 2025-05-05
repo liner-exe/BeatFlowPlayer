@@ -8,14 +8,9 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import com.example.beatflowplayer.ui.screens.albums_screen.Album
 import androidx.core.net.toUri
 import com.example.beatflowplayer.domain.model.Track
-import dagger.hilt.android.qualifiers.ApplicationContext
-import jakarta.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 fun getTracksForAlbum(context: Context, albumId: Long): List<Track> {
     val audioList = mutableListOf<Track>()

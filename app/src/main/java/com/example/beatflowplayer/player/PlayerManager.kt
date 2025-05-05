@@ -1,23 +1,15 @@
 package com.example.beatflowplayer.player
 
 import android.content.Context
-import android.media.MediaPlayer
-import android.media.session.PlaybackState
-import android.net.Uri
-import android.util.Log
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.domain.model.toMediaItem
 import com.example.beatflowplayer.domain.model.toTrack
-import com.example.beatflowplayer.utils.getAlbumCover
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,22 +1,23 @@
-package com.example.beatflowplayer.data.repository
+package com.example.beaflowplayer.data.repository
 
 import android.content.ContentUris
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import com.example.beatflowplayer.data.local.AudioLocalDataSource
+import com.example.beaflowplayer.data.local.AudioLocalDataSource
 import com.example.beatflowplayer.domain.model.Track
+import com.example.beatflowplayer.domain.repository.AudioRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class AudioRepository @Inject constructor(
+class AudioRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val audioLocalDataSource: AudioLocalDataSource
-) {
-    suspend fun getAllAudioTracks(): List<Track> {
+) : AudioRepository {
+    override suspend fun getAllTracks(): List<Track> {
         return withContext(Dispatchers.IO) {
             try {
                 val audioList = mutableListOf<Track>()

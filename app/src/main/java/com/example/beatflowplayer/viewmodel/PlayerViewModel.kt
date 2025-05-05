@@ -10,9 +10,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.beatflowplayer.domain.model.Track
-import com.example.beatflowplayer.domain.model.toMediaItem
+import com.example.beatflowplayer.data.mapper.toMediaItem
 import com.example.beatflowplayer.player.PlayerManager
-import com.example.beatflowplayer.data.repository.AudioRepository
+import com.example.beatflowplayer.data.repository.AudioRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    private val audioRepository: AudioRepository,
+    private val audioRepository: AudioRepositoryImpl,
     private val playerManager: PlayerManager
 ) : ViewModel() {
     private val _allTracks = mutableStateListOf<Track>()
@@ -78,7 +78,6 @@ class PlayerViewModel @Inject constructor(
             launch {
                 playerManager.duration.collect { duration ->
                     _duration.longValue = duration
-                    Log.d("view", _duration.toString())
                 }
             }
 
@@ -100,7 +99,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val tracks = audioRepository.getAllAudioTracks()
+                val tracks = audioRepository.getAllTracks()
                 _allTracks.clear()
                 _allTracks.addAll(tracks)
             } catch (e: Exception) {
@@ -113,7 +112,7 @@ class PlayerViewModel @Inject constructor(
 
     fun playTrackFromAllTracks(trackId: Long) {
         viewModelScope.launch {
-            val tracks = audioRepository.getAllAudioTracks()
+            val tracks = audioRepository.getAllTracks()
             val clickedIndex = tracks.indexOfFirst { it.id == trackId }
 
             val mediaItems = tracks.map { it.toMediaItem() }
@@ -136,11 +135,7 @@ class PlayerViewModel @Inject constructor(
     fun seekTo(position: Long) {
         _position.longValue = position
         playerManager.seekTo(position)
-
-        Log.d("ViewModel_pos", _position.longValue.toString())
-        Log.d("ViewModel_dur", _duration.longValue.toString())
     }
-
 
     fun playNext() {
         playerManager.playNext()
@@ -157,7 +152,6 @@ class PlayerViewModel @Inject constructor(
     fun setAccentColor(color: Color?) {
         _accentColor.value = color
     }
-
 
     override fun onCleared() {
         super.onCleared()

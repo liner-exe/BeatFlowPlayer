@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.beaflowplayer.data"
+    namespace = "com.example.beatflowplayer.data"
     compileSdk = 35
 
     defaultConfig {
@@ -44,6 +44,9 @@ dependencies {
     // Room
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
+    // ExoPlayer
+    implementation(libs.androidx.media3.exoplayer)
 
     implementation(libs.androidx.core.ktx)
 

@@ -1,21 +1,21 @@
-package com.example.beaflowplayer.data.repository
+package com.example.beatflowplayer.data.repository
 
 import android.content.ContentUris
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import com.example.beaflowplayer.data.local.AudioLocalDataSource
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.domain.repository.AudioRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AudioRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val audioLocalDataSource: AudioLocalDataSource
+    @ApplicationContext private val context: Context
 ) : AudioRepository {
     override suspend fun getAllTracks(): List<Track> {
         return withContext(Dispatchers.IO) {
@@ -65,7 +65,7 @@ class AudioRepositoryImpl @Inject constructor(
 
                         val contentUri = ContentUris.withAppendedId(collection, id)
 
-                        audioList.add(Track(id, name, artist, duration, contentUri))
+                        audioList.add(Track(id, name, artist, duration, contentUri.toString()))
                     }
                 }
                 audioList

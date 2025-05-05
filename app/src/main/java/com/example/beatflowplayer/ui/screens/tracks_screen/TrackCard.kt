@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.utils.getAlbumCover
 import com.example.beatflowplayer.viewmodel.PlayerViewModel
 
@@ -47,7 +48,7 @@ fun TrackCard(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val bitmap by produceState<Bitmap?>(initialValue = null, track.uri) {
+    val bitmap by produceState<Bitmap?>(initialValue = null, track) {
         value = getAlbumCover(context, track.uri)
     }
 

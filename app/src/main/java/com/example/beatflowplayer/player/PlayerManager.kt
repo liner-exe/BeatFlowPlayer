@@ -5,8 +5,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.beatflowplayer.domain.model.Track
-import com.example.beatflowplayer.domain.model.toMediaItem
-import com.example.beatflowplayer.domain.model.toTrack
+import com.example.beatflowplayer.data.mapper.toMediaItem
+import com.example.beatflowplayer.data.mapper.toTrack
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

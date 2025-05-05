@@ -1,6 +1,5 @@
-package com.example.beaflowplayer.data.model
+package com.example.beatflowplayer.data.model
 
-import androidx.core.net.toUri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -30,7 +29,7 @@ data class TrackEntity(
         title = title,
         artist = artist,
         duration = duration,
-        uri = uri.toUri(),
+        uri = uri,
         isFavourite = isFavourite
     )
 }

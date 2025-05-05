@@ -56,7 +56,7 @@ fun getTracksForAlbum(context: Context, albumId: Long): List<Track> {
 
             val contentUri = ContentUris.withAppendedId(collection, id)
 
-            audioList.add(Track(id, name, artist, duration, contentUri))
+            audioList.add(Track(id, name, artist, duration, contentUri.toString()))
         }
     }
 
@@ -110,11 +110,11 @@ fun getAlbums(context: Context): List<Album> {
     return albumList
 }
 
-fun getAlbumCover(context: Context, uri: Uri): Bitmap? {
+fun getAlbumCover(context: Context, uri: String): Bitmap? {
     val retriever = MediaMetadataRetriever()
 
     return try {
-        retriever.setDataSource(context, uri)
+        retriever.setDataSource(context, uri.toUri())
         val art = retriever.embeddedPicture
         art?.let {
             BitmapFactory.decodeByteArray(it, 0, it.size)

@@ -66,7 +66,6 @@ class PlayerManager @Inject constructor(
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (!isPlaying && exoPlayer.playWhenReady) return
                 _isPlaying.value = isPlaying
-                // _duration.value = exoPlayer.duration
             }
         })
 
@@ -125,10 +124,6 @@ class PlayerManager @Inject constructor(
     fun toggleShuffle() {
         exoPlayer.shuffleModeEnabled = !exoPlayer.shuffleModeEnabled
     }
-
-    fun getState(): Boolean = exoPlayer.isPlaying
-
-    fun getCurrentIndex(): Int = exoPlayer.currentMediaItemIndex
 
     fun release() = exoPlayer.release()
 }

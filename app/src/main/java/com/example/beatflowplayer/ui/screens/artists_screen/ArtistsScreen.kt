@@ -12,6 +12,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import com.example.beatflowplayer.R
+import com.example.beatflowplayer.domain.model.Artist
 
 @Composable
 fun ArtistsScreen(

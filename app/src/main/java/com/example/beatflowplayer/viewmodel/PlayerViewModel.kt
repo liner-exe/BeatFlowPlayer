@@ -15,6 +15,9 @@ import com.example.beatflowplayer.player.PlayerManager
 import com.example.beatflowplayer.data.repository.AudioRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,8 +38,8 @@ class PlayerViewModel @Inject constructor(
     private val _isShuffleEnabled = mutableStateOf(false)
     val isShuffleEnabled: State<Boolean> = _isShuffleEnabled
 
-    private val _trackQueue = mutableStateListOf<Track>()
-    val trackQueue: List<Track> get() = _trackQueue
+    private val _trackQueue = MutableStateFlow<List<Track>>(emptyList())
+    val trackQueue: StateFlow<List<Track>> = _trackQueue.asStateFlow()
     private var currentIndex = 0
 
     private val _duration = mutableLongStateOf(0L)
@@ -63,8 +66,6 @@ class PlayerViewModel @Inject constructor(
     private val _accentColor = mutableStateOf<Color?>(null)
     val accentColor: State<Color?> = _accentColor
 
-    private var updateJob: Job? = null
-
     init {
         loadTracks()
 
@@ -90,6 +91,12 @@ class PlayerViewModel @Inject constructor(
             launch {
                 playerManager.currentTrack.collect { track ->
                     _currentTrack.value = track
+                }
+            }
+
+            launch {
+                playerManager.tracks.collect { tracks ->
+                    _trackQueue.value = tracks
                 }
             }
         }

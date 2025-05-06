@@ -1,8 +1,11 @@
 package com.example.beatflowplayer.player
 
 import android.content.Context
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.data.mapper.toMediaItem
@@ -74,6 +77,17 @@ class PlayerManager @Inject constructor(
             }
         })
 
+        exoPlayer.addListener(object : Player.Listener {
+            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+                val updatedTracks = (0 until exoPlayer.mediaItemCount).map { index ->
+                    exoPlayer.getMediaItemAt(index).toTrack()
+                }
+                _tracks.value = updatedTracks
+
+                Log.d("player_manager", "updated")
+            }
+        })
+
         scope.launch {
             while (isActive) {
                 if (exoPlayer.isPlaying) {
@@ -86,6 +100,7 @@ class PlayerManager @Inject constructor(
     }
 
     fun setQueue(tracks: List<MediaItem>, index: Int) {
+        _tracks.value = tracks.map { it.toTrack() }
         exoPlayer.setMediaItems(tracks, index, 0L)
     }
 

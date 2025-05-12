@@ -10,11 +10,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.beatflowplayer.domain.model.Track
-import com.example.beatflowplayer.data.mapper.toMediaItem
 import com.example.beatflowplayer.player.PlayerManager
-import com.example.beatflowplayer.data.repository.AudioRepositoryImpl
+import com.example.beatflowplayer.domain.repository.AudioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    private val audioRepository: AudioRepositoryImpl,
+    private val audioRepository: AudioRepository,
     private val playerManager: PlayerManager
 ) : ViewModel() {
     private val _allTracks = mutableStateListOf<Track>()
@@ -120,18 +118,10 @@ class PlayerViewModel @Inject constructor(
     fun playTrackFromAllTracks(trackId: Long) {
         viewModelScope.launch {
             val tracks = audioRepository.getAllTracks()
-            val clickedIndex = tracks.indexOfFirst { it.id == trackId }
+            val clickedTrack = tracks.firstOrNull { it.id == trackId } ?: return@launch
 
-            val mediaItems = tracks.map { it.toMediaItem() }
-
-            _currentTrack.value = tracks[clickedIndex]
-
-            playerManager.setQueue(mediaItems, clickedIndex)
+            playerManager.setQueue(tracks, clickedTrack)
         }
-    }
-
-    fun addToQueue(track: Track) {
-        playerManager.addToQueue(track)
     }
 
     fun play() = playerManager.play()

@@ -20,6 +20,8 @@ fun QueueContent(
 ) {
     val queue = playerViewModel.trackQueue
 
+    val currentTrack = playerViewModel.currentTrack
+
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
@@ -31,7 +33,7 @@ fun QueueContent(
             items(queue.value) { track ->
                 TrackCard(
                     track,
-                    false
+                    track.id == currentTrack.value?.id
                 ) {
 
                 }

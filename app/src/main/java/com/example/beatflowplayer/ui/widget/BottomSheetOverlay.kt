@@ -1,5 +1,6 @@
 package com.example.beatflowplayer.ui.widget
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +29,7 @@ import com.example.beatflowplayer.ui.screens.player_screen.SheetCollapsedContent
 import com.example.beatflowplayer.ui.screens.player_screen.SheetExpanded
 import com.example.beatflowplayer.ui.screens.player_screen.SheetExpandedContent
 import com.example.beatflowplayer.viewmodel.PlayerViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,6 +67,13 @@ fun BottomSheetOverlay(
             } catch (e: Exception) {
                 0f
             }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            Log.d("overlay", track?.title.toString() + track?.artist.toString())
+            delay(300)
         }
     }
 

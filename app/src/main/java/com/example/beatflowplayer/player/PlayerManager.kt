@@ -10,6 +10,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.data.mapper.toMediaItem
 import com.example.beatflowplayer.data.mapper.toTrack
+import com.example.beatflowplayer.data.player.QueueManagerImpl
+import com.example.beatflowplayer.domain.player.QueueManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,11 +28,13 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class PlayerManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val queueManager: QueueManager
 ) {
-    private val exoPlayer: ExoPlayer by lazy {
+    private val exoPlayer: ExoPlayer by lazy(LazyThreadSafetyMode.NONE) {
         ExoPlayer.Builder(context).build().apply {
             repeatMode = Player.REPEAT_MODE_OFF
+            shuffleModeEnabled = false
         }
     }
 
@@ -60,30 +65,25 @@ class PlayerManager @Inject constructor(
                     _duration.value = exoPlayer.duration.milliseconds.inWholeMilliseconds
                 }
             }
-        })
 
-        exoPlayer.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 if (!isPlaying && exoPlayer.playWhenReady) return
                 _isPlaying.value = isPlaying
             }
-        })
 
-        exoPlayer.addListener(object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                _currentTrack.value = mediaItem?.toTrack()
-                _position.value = 0
+                val track = mediaItem?.toTrack() ?: return
+                val index = queueManager.queue.value.indexOfFirst { it.id == track.id }
+                if (index >= 0) {
+                    queueManager.setCurrentTrack(index)
+                }
             }
-        })
 
-        exoPlayer.addListener(object : Player.Listener {
             override fun onTimelineChanged(timeline: Timeline, reason: Int) {
                 val updatedTracks = (0 until exoPlayer.mediaItemCount).map { index ->
                     exoPlayer.getMediaItemAt(index).toTrack()
                 }
                 _tracks.value = updatedTracks
-
-                Log.d("player_manager", "updated")
             }
         })
 
@@ -96,14 +96,43 @@ class PlayerManager @Inject constructor(
                 delay(500)
             }
         }
+
+        observeQueueManager()
     }
 
-    fun setQueue(tracks: List<MediaItem>, index: Int) {
-        _tracks.value = tracks.map { it.toTrack() }
-        exoPlayer.setMediaItems(tracks, index, 0L)
+    private fun observeQueueManager() {
+        scope.launch {
+            queueManager.queue.collect { tracks ->
+                val mediaItems = tracks.map { it.toMediaItem() }
+                exoPlayer.setMediaItems(mediaItems, queueManager.currentIndex.value, 0)
+            }
+        }
+
+        scope.launch {
+            queueManager.currentIndex.collect { index ->
+                if (index >= 0) exoPlayer.seekTo(index, 0)
+            }
+        }
+
+        scope.launch {
+            queueManager.currentTrack.collect { track ->
+                val index = queueManager.queue.value.indexOfFirst { it.id == track?.id }
+                if (index >= 0) {
+                    exoPlayer.seekTo(index, 0)
+                }
+                _currentTrack.value = track
+            }
+        }
     }
 
-    fun addToQueue(track: Track) = exoPlayer.addMediaItem(track.toMediaItem())
+    fun setQueue(tracks: List<Track>, startFrom: Track) {
+        queueManager.setQueue(tracks)
+
+        val index = queueManager.queue.value.indexOfFirst { it.id == startFrom.id }
+        queueManager.setCurrentTrack(index)
+    }
+
+    fun addToQueue(track: Track) = queueManager.addToQueue(track)
 
     fun play() {
         exoPlayer.prepare()
@@ -113,17 +142,10 @@ class PlayerManager @Inject constructor(
     fun pause() = exoPlayer.pause()
     fun togglePlayPause() = if (exoPlayer.isPlaying) pause() else play()
     fun seekTo(position: Long) = exoPlayer.seekTo(position)
-    fun playNext() = exoPlayer.seekToNextMediaItem()
-    fun playPrevious() = exoPlayer.seekToPreviousMediaItem()
-
-    fun toggleLoop() {
-        exoPlayer.repeatMode = if (exoPlayer.repeatMode == Player.REPEAT_MODE_ONE)
-            Player.REPEAT_MODE_OFF else Player.REPEAT_MODE_ONE
-    }
-
-    fun toggleShuffle() {
-        exoPlayer.shuffleModeEnabled = !exoPlayer.shuffleModeEnabled
-    }
+    fun playNext() = queueManager.skipToNext()
+    fun playPrevious() = queueManager.skipToPrevious()
+    fun toggleLoop() = queueManager.toggleLoop()
+    fun toggleShuffle() = queueManager.toggleShuffle()
 
     fun release() = exoPlayer.release()
 }

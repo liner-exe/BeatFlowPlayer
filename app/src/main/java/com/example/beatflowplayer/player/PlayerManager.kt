@@ -146,6 +146,9 @@ class PlayerManager @Inject constructor(
     fun playPrevious() = queueManager.skipToPrevious()
     fun toggleLoop() = queueManager.toggleLoop()
     fun toggleShuffle() = queueManager.toggleShuffle()
+    fun setSpeed(speed: Float) = exoPlayer.apply {
+        playbackParameters.speed = speed
+    }
 
     fun release() = exoPlayer.release()
 }

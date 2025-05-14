@@ -1,6 +1,6 @@
 package com.example.beatflowplayer.ui.screens.albums_screen
 
-import android.net.Uri
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,11 +19,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,13 +35,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.beatflowplayer.R
+import com.example.beatflowplayer.domain.model.Album
 import com.example.beatflowplayer.ui.navigation.Screen
+import com.example.beatflowplayer.utils.getAlbumCover
 
 @Composable
 fun AlbumCard(
     album: Album,
     navController: NavHostController? = null
 ) {
+    val context = LocalContext.current
+    val bitmap by produceState<Bitmap?>(initialValue = null, album) {
+        value = getAlbumCover(context, album.artworkUri)
+    }
+
     Card(
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
@@ -54,13 +65,23 @@ fun AlbumCard(
                     .padding(4.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    modifier = Modifier
-                        .size(164.dp)
-                        .clip(RoundedCornerShape(15.dp)),
-                    painter = painterResource(R.drawable.nominalo),
-                    contentDescription = "playlistCover"
-                )
+                if (bitmap != null) {
+                    Image(
+                        modifier = Modifier
+                            .size(164.dp)
+                            .clip(RoundedCornerShape(15.dp)),
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentDescription = "playlistCover"
+                    )
+                } else {
+                    Image(
+                        modifier = Modifier
+                            .size(164.dp)
+                            .clip(RoundedCornerShape(15.dp)),
+                        painter = painterResource(R.drawable.nominalo),
+                        contentDescription = "playlistCover"
+                    )
+                }
             }
 
             Text(
@@ -73,7 +94,7 @@ fun AlbumCard(
 
             Text(
                 modifier = Modifier.padding(bottom = 4.dp, start = 30.dp),
-                text = album.artist,
+                text = album.artists.joinToString(),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -103,5 +124,5 @@ fun AlbumsList(
 @Composable
 @Preview
 fun AlbumCardPreview() {
-    AlbumCard(Album(0, "Million Dollar Business", "Morgen", emptyList()))
+    AlbumCard(Album(0, "Million Dollar Business", listOf("Morgen"), "", emptyList()))
 }

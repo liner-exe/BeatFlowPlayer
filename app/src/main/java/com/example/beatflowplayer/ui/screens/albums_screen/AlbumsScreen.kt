@@ -5,7 +5,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.beatflowplayer.ui.screens.albums_screen.Album
 import com.example.beatflowplayer.ui.screens.playlists_screen.PlaylistsScreen
 import com.example.beatflowplayer.utils.getAlbums
 

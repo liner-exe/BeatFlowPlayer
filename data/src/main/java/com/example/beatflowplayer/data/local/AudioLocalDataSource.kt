@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import android.util.Log
 import com.example.beatflowplayer.domain.AudioLocalDataSource
 import com.example.beatflowplayer.domain.model.Album
+import com.example.beatflowplayer.domain.model.Playlist
 import com.example.beatflowplayer.domain.model.Track
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,9 @@ class AudioLocalDataSourceImpl @Inject constructor(
                     MediaStore.Audio.Media.TITLE,
                     MediaStore.Audio.Media.ARTIST,
                     MediaStore.Audio.Media.DURATION,
-                    MediaStore.Audio.Media.DATA
+                    MediaStore.Audio.Media.DATA,
+                    MediaStore.Audio.Media.ALBUM_ID,
+                    MediaStore.Audio.Media.ARTIST_ID
                 )
 
                 val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
@@ -52,6 +55,8 @@ class AudioLocalDataSourceImpl @Inject constructor(
                     val artistColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
                     val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
                     val dataColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+                    val albumIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
+                    val artistIdColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID)
 
                     while (it.moveToNext()) {
                         val filePath = it.getString(dataColumn)
@@ -77,6 +82,14 @@ class AudioLocalDataSourceImpl @Inject constructor(
     }
 
     override suspend fun getAllAlbums(): List<Album> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllArtists(): List<Album> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllPlaylists(): List<Playlist> {
         TODO("Not yet implemented")
     }
 }

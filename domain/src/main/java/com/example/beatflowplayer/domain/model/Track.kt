@@ -14,18 +14,8 @@ data class Track(
         return "%d:%02d".format(minutes, seconds)
     }
 
-    override fun equals(other: Any?): Boolean {
-        return id == (other as Track).id
-    }
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + duration.hashCode()
-        result = 31 * result + title.hashCode()
-        result = 31 * result + artist.hashCode()
-        result = 31 * result + uri.hashCode()
-        return result
-    }
+    override fun equals(other: Any?): Boolean = other is Track && id == other.id
+    override fun hashCode(): Int = id.hashCode()
 
     companion object {
         val UNKNOWN_ARTIST: String = "Unknown Artist"

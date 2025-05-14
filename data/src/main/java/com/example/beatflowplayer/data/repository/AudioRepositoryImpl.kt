@@ -76,4 +76,28 @@ class AudioRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun getAllAlbums(): List<Track> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllArtists(): List<Track> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllPlaylists(): List<Track> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTracksByAlbumId(albumId: Long): List<Track> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTracksByArtistId(artistId: Long): List<Track> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTracksByPlaylistId(playlistId: Long): List<Track> {
+        TODO("Not yet implemented")
+    }
 }

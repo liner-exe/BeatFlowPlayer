@@ -1,4 +1,4 @@
-package com.example.beatflowplayer.data.model
+package com.example.beatflowplayer.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

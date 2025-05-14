@@ -8,8 +8,9 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.example.beatflowplayer.ui.screens.albums_screen.Album
+import android.util.Log
 import androidx.core.net.toUri
+import com.example.beatflowplayer.domain.model.Album
 import com.example.beatflowplayer.domain.model.Track
 
 fun getTracksForAlbum(context: Context, albumId: Long): List<Track> {
@@ -98,12 +99,15 @@ fun getAlbums(context: Context): List<Album> {
             val name = it.getString(nameColumn)
             val artist = it.getString(artistColumn)
 
-            val artworkUri = ContentUris.withAppendedId(
-                "content://media/external/audio/albumart".toUri(),
-                id
-            )
+//            val artworkUri = ContentUris.withAppendedId(
+//                "content://media/external/audio/albumart".toUri(),
+//                id
+//            ).toString()
 
-            albumList.add(Album(id, name, artist, emptyList()))
+            val artworkUri = ContentUris.withAppendedId(collection, id)
+            Log.d("get_albums", artworkUri.toString())
+
+            albumList.add(Album(id, name, artist.split(", ").toList(), artworkUri.toString(), emptyList()))
         }
     }
 

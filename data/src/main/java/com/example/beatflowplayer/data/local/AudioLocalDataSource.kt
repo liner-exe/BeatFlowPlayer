@@ -66,23 +66,75 @@ class AudioLocalDataSourceImpl @Inject constructor(
                         val name = it.getString(nameColumn)
                         val artist = it.getString(artistColumn)
                         val duration = it.getLong(durationColumn)
+                        val albumId = it.getLong(albumIdColumn)
 
                         val contentUri = ContentUris.withAppendedId(collection, id)
 
-                        audioList.add(Track(id, name, artist, duration, contentUri.toString()))
+                        audioList.add(Track(id, name, artist, duration, contentUri.toString(),
+                            albumId))
                     }
                 }
                 audioList
 
             } catch (e: Exception) {
-                Log.e("AudioRepository", "Error loading tracks.", e)
+                Log.e("AudioLocalDataSource", "Error loading tracks.", e)
                 emptyList()
             }
         }
     }
 
     override suspend fun getAllAlbums(): List<Album> {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            try {
+                val albumList = mutableListOf<Album>()
+
+                val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                } else {
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                }
+
+                val projection = arrayOf(
+                    MediaStore.Audio.Albums._ID,
+                    MediaStore.Audio.Albums.ALBUM,
+                    MediaStore.Audio.Albums.ARTIST
+                )
+
+                val sortOrder = "${MediaStore.Audio.Albums.ALBUM} ASC"
+
+                val cursor = context.contentResolver.query(
+                    collection,
+                    projection,
+                    null,
+                    null,
+                    sortOrder
+                )
+
+                cursor?.use {
+                    val idColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Albums._ID)
+                    val titleColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM)
+                    val artistColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Albums.ARTIST)
+
+                    while (it.moveToNext()) {
+                        val id = it.getLong(idColumn)
+                        val title = it.getString(titleColumn)
+                        val artist = it.getString(artistColumn)
+
+                        val artworkUri = ContentUris.withAppendedId(collection, id)
+
+                        albumList.add(
+                            Album(id, title, artist.split(", "), artworkUri.toString(), emptyList())
+                        )
+                    }
+                }
+
+                albumList
+
+            } catch (e: Exception) {
+                Log.e("AudioLocalDataSource", "Error when loading tracks", e)
+                emptyList()
+            }
+        }
     }
 
     override suspend fun getAllArtists(): List<Album> {

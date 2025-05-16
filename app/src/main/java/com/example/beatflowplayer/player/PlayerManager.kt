@@ -132,6 +132,10 @@ class PlayerManager @Inject constructor(
         queueManager.setCurrentTrack(index)
     }
 
+    fun setAlbumQueue(tracks: List<Track>) {
+        queueManager.setQueue(tracks)
+    }
+
     fun addToQueue(track: Track) = queueManager.addToQueue(track)
 
     fun play() {

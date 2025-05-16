@@ -54,7 +54,7 @@ fun AlbumCard(
             containerColor = Color.Transparent
         ),
         onClick = {
-            navController?.navigate(Screen.AlbumScreen.route)
+            navController?.navigate(Screen.AlbumScreen.withId(album.id.toString()))
         },
         shape = RectangleShape
     ) {
@@ -116,7 +116,10 @@ fun AlbumsList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(albums) { album ->
-            AlbumCard(album = album, navController = navController)
+            AlbumCard(
+                album = album,
+                navController = navController
+            )
         }
     }
 }

@@ -9,4 +9,16 @@ data class Album(
 ) {
     override fun equals(other: Any?): Boolean = other is Album && id == other.id
     override fun hashCode(): Int = id.hashCode()
+
+    fun firstTrack(): Track = tracks.first()
+
+    companion object {
+        val empty = Album(
+            -1,
+            "",
+            emptyList(),
+            "",
+            emptyList()
+        )
+    }
 }

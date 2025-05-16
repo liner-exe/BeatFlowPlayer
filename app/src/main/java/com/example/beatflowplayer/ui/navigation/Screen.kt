@@ -8,7 +8,11 @@ sealed class Screen(val route: String) {
     object AlbumsScreen : Screen("albums_screen")
     object ArtistsScreen : Screen("artists_screen")
     object SearchScreen : Screen("search_screen")
-    object PlaylistScreen : Screen("playlist_screen")
-    object AlbumScreen : Screen("album_screen")
+    object PlaylistScreen : Screen("playlist_screen/{id}")
+    object AlbumScreen : Screen("album_screen/{id}")
     object SettingsScreen : Screen("settings_screen")
+
+    fun withId(id: String): String {
+        return route.replace("{id}", id)
+    }
 }

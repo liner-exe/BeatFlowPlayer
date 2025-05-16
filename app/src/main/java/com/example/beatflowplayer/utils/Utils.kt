@@ -48,6 +48,7 @@ fun getTracksForAlbum(context: Context, albumId: Long): List<Track> {
         val nameColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
         val artistColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
         val durationColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+        val albumId = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID)
 
         while (it.moveToNext()) {
             val id = it.getLong(idColumn)
@@ -57,7 +58,7 @@ fun getTracksForAlbum(context: Context, albumId: Long): List<Track> {
 
             val contentUri = ContentUris.withAppendedId(collection, id)
 
-            audioList.add(Track(id, name, artist, duration, contentUri.toString()))
+            audioList.add(Track(id, name, artist, duration, contentUri.toString(), 0))
         }
     }
 
@@ -99,15 +100,9 @@ fun getAlbums(context: Context): List<Album> {
             val name = it.getString(nameColumn)
             val artist = it.getString(artistColumn)
 
-//            val artworkUri = ContentUris.withAppendedId(
-//                "content://media/external/audio/albumart".toUri(),
-//                id
-//            ).toString()
-
             val artworkUri = ContentUris.withAppendedId(collection, id)
-            Log.d("get_albums", artworkUri.toString())
 
-            albumList.add(Album(id, name, artist.split(", ").toList(), artworkUri.toString(), emptyList()))
+            albumList.add(Album(id, name, artist.split(", "), artworkUri.toString(), emptyList()))
         }
     }
 

@@ -1,9 +1,11 @@
 package com.example.beatflowplayer.di
 
+import com.example.beatflowplayer.data.local.AudioLocalDataSourceImpl
 import com.example.beatflowplayer.data.repository.AudioRepositoryImpl
 import com.example.beatflowplayer.domain.repository.AudioRepository
 import com.example.beatflowplayer.domain.player.QueueManager
 import com.example.beatflowplayer.data.player.QueueManagerImpl
+import com.example.beatflowplayer.domain.AudioLocalDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +17,9 @@ import javax.inject.Singleton
 object DataModule {
     @Provides
     fun provideAudioRepository(impl: AudioRepositoryImpl): AudioRepository = impl
+
+    @Provides
+    fun provideAudioLocalDataSource(impl: AudioLocalDataSourceImpl): AudioLocalDataSource = impl
 
     @Provides
     fun provideQueueManager(impl: QueueManagerImpl): QueueManager = impl

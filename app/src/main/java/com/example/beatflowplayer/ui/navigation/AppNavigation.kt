@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.beatflowplayer.ui.screens.album_screen.AlbumScreen
 import com.example.beatflowplayer.ui.screens.player_screen.AudioPlayerUI
 import com.example.beatflowplayer.ui.screens.playlist_screen.PlaylistScreen
@@ -29,7 +31,12 @@ fun AppNavigation() {
                 composable(Screen.PlayerScreen.route) { AudioPlayerUI(navController) }
                 composable(Screen.SearchScreen.route) { SearchScreen(navController) }
                 composable(Screen.PlaylistScreen.route) { PlaylistScreen(navController) }
-                composable(Screen.AlbumScreen.route) { AlbumScreen(navController) }
+                composable(
+                    Screen.AlbumScreen.route,
+                    arguments = listOf(navArgument("id") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    AlbumScreen(backStackEntry.arguments?.getString("id") ?: "-1", navController)
+                }
                 composable(Screen.SettingsScreen.route) { SettingsScreen(navController) }
             }
 

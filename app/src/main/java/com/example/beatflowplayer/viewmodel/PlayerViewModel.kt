@@ -115,6 +115,14 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    fun setQueue(tracks: List<Track>, track: Track) {
+        playerManager.setQueue(tracks, track)
+    }
+
+    fun setAlbumQueue(tracks: List<Track>) {
+        playerManager.setAlbumQueue(tracks)
+    }
+
     fun playTrackFromAllTracks(trackId: Long) {
         viewModelScope.launch {
             val tracks = audioRepository.getAllTracks()

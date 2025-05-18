@@ -1,6 +1,7 @@
 package com.example.beatflowplayer.viewmodel
 
 import android.util.Log
+import androidx.compose.material3.Snackbar
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -10,14 +11,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.beatflowplayer.domain.model.Track
+import com.example.beatflowplayer.domain.model.player.QueueContext
+import com.example.beatflowplayer.domain.model.player.SourceType
 import com.example.beatflowplayer.player.PlayerManager
 import com.example.beatflowplayer.domain.repository.AudioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.SortedMap
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
@@ -49,6 +56,15 @@ class PlayerViewModel @Inject constructor(
     private var _currentTrack = mutableStateOf<Track?>(null)
     val currentTrack: State<Track?> = _currentTrack
 
+    private val _currentAlbumId = mutableLongStateOf(-1)
+    val currentAlbumId: State<Long> = _currentAlbumId
+
+    private val _queueContext = mutableStateOf<QueueContext?>(null)
+    val queueContext: State<QueueContext?> = _queueContext
+
+    private val _playingFrom = mutableStateOf<String?>(null)
+    val playingFrom: State<String?> = _playingFrom
+
     private var _position = mutableLongStateOf(0L)
     val position: State<Long> = _position
 
@@ -60,6 +76,9 @@ class PlayerViewModel @Inject constructor(
 
     private val _timeRemaining = mutableStateOf("0:00")
     val timeRemaining: State<String> = _timeRemaining
+
+    private val _eventFlow = MutableSharedFlow<String>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     private val _accentColor = mutableStateOf<Color?>(null)
     val accentColor: State<Color?> = _accentColor
@@ -115,21 +134,16 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    fun setQueue(tracks: List<Track>, track: Track) {
-        playerManager.setQueue(tracks, track)
-    }
+    fun playFromContext(context: QueueContext, trackId: Long) {
+        val isSameContext = context.source == _queueContext.value?.source
+        _queueContext.value = context
 
-    fun setAlbumQueue(tracks: List<Track>) {
-        playerManager.setAlbumQueue(tracks)
-    }
-
-    fun playTrackFromAllTracks(trackId: Long) {
-        viewModelScope.launch {
-            val tracks = audioRepository.getAllTracks()
-            val clickedTrack = tracks.firstOrNull { it.id == trackId } ?: return@launch
-
-            playerManager.setQueue(tracks, clickedTrack)
+        if (!isSameContext) {
+            seekTo(0)
         }
+
+        playerManager.setQueue(context.tracks, trackId)
+        play()
     }
 
     fun play() = playerManager.play()
@@ -150,12 +164,15 @@ class PlayerViewModel @Inject constructor(
         playerManager.playPrevious()
     }
 
-    fun setTrackPosition(position: Int) {
-        currentIndex = position
-    }
-
     fun setAccentColor(color: Color?) {
         _accentColor.value = color
+    }
+
+    fun refreshLibrary() {
+        viewModelScope.launch {
+            audioRepository.refreshAll()
+            _eventFlow.emit("Library refreshed")
+        }
     }
 
     override fun onCleared() {

@@ -4,7 +4,11 @@ import android.graphics.Bitmap
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MarqueeAnimationMode
+import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,17 +24,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -46,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -54,13 +59,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.palette.graphics.Palette
 import com.example.beatflowplayer.R
+import com.example.beatflowplayer.domain.model.player.SourceType
 import com.example.beatflowplayer.utils.convertFromDuration
 import com.example.beatflowplayer.utils.getAlbumCover
 import com.example.beatflowplayer.viewmodel.PlayerViewModel
@@ -75,7 +81,8 @@ import kotlinx.coroutines.withContext
 fun SheetExpandedContent(
     progress: Float,
     scaffoldState: BottomSheetScaffoldState,
-    playerViewModel: PlayerViewModel = hiltViewModel()
+    navController: NavController,
+    playerViewModel: PlayerViewModel
 ) {
     val context = LocalContext.current
 
@@ -88,6 +95,8 @@ fun SheetExpandedContent(
     val currentTrack by playerViewModel.currentTrack
     val currentPosition by playerViewModel.position
     val accentColor by playerViewModel.accentColor
+
+    val queueContext by playerViewModel.queueContext
 
     if (currentTrack == null) return
 
@@ -176,7 +185,13 @@ fun SheetExpandedContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Row {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     IconButton(
                         modifier = Modifier
                             .size(48.dp),
@@ -193,7 +208,39 @@ fun SheetExpandedContent(
                         )
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth(0.7f)
+                            .clipToBounds()
+                            .basicMarquee(
+                                iterations = Int.MAX_VALUE,
+                                animationMode = MarqueeAnimationMode.Immediately,
+                                repeatDelayMillis = 500,
+                                initialDelayMillis = 0,
+                                spacing = MarqueeSpacing(10.dp),
+                                velocity = 20.dp
+                            )
+                            .clickable(
+                                enabled = queueContext?.source !is SourceType.AllTracks
+                            ) {
+                                val sourceId = queueContext?.source?.getSourceId()
+
+                                navController.navigate(
+                                    queueContext?.source?.getRouterForSource(
+                                        sourceId.toString()
+                                    ).toString()
+                                )
+
+                                scope.launch {
+                                    scaffoldState.bottomSheetState.partialExpand()
+                                }
+                            },
+                        text = queueContext?.source?.displayName() ?: "Now Playing",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White,
+                        softWrap = true
+                    )
 
                     IconButton(
                         modifier = Modifier
@@ -460,19 +507,33 @@ fun SheetExpandedContent(
                         }
                     }
 
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
+                            .fillMaxWidth(0.95f),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ){
-                        Text("placeholder")
+                        var isFavourite by remember { mutableStateOf(false) }
+
+                        IconButton(
+                            onClick = { isFavourite = !isFavourite }
+                        ) {
+                            Icon(
+                                if (isFavourite) Icons.Default.Favorite
+                                else Icons.Default.FavoriteBorder,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+                        }
                         IconButton(
                             onClick = { isQueueShowed = true }
                         ) {
                             Icon(
                                 Icons.AutoMirrored.Filled.List,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = Color.White
                             )
                         }
                     }

@@ -12,8 +12,11 @@ data class AlbumEntity(
     @ColumnInfo(name = "title")
     val title: String,
 
-    @ColumnInfo(name = "artists")
-    val artists: String,
+    @ColumnInfo(name = "artist")
+    val artist: String,
+
+    @ColumnInfo(name = "artist_id")
+    val artistId: Long,
 
     @ColumnInfo(name = "artwork")
     val artworkUri: String,
@@ -24,8 +27,9 @@ data class AlbumEntity(
     fun toAlbum() = Album(
         id = id,
         title = title,
-        artists = listOf(artists),
+        artist = artist,
         artworkUri = artworkUri,
+        artistId = artistId,
         tracks = emptyList()
     )
 }

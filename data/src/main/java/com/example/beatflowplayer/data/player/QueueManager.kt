@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class QueueManagerImpl @Inject constructor() : QueueManager {
     private val _tracks = MutableStateFlow<List<Track>>(emptyList())
     override val tracks: StateFlow<List<Track>> = _tracks.asStateFlow()
@@ -53,7 +55,9 @@ class QueueManagerImpl @Inject constructor() : QueueManager {
     override fun updateQueue() {
         val current = _currentTrack.value
         _queue.value = if (_isShuffle.value) {
-            _tracks.value.shuffled()
+            val otherTracks = _tracks.value.filter { it.id != current?.id }
+            val shuffledTracks = otherTracks.shuffled()
+            if (current != null) listOf(current) + shuffledTracks else shuffledTracks
         } else {
             _tracks.value
         }

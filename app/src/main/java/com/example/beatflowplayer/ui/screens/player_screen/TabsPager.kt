@@ -31,7 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.beatflowplayer.ui.navigation.Screen
+import com.example.beatflowplayer.domain.navigation.Screen
 import com.example.beatflowplayer.ui.screens.albums_screen.AlbumsScreen
 import com.example.beatflowplayer.ui.screens.artists_screen.ArtistsScreen
 import com.example.beatflowplayer.ui.screens.playlists_screen.PlaylistsScreen
@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 fun TabsPager(
     navController: NavHostController,
     drawerState: DrawerState,
-    playerViewModel: PlayerViewModel = hiltViewModel(),
+    playerViewModel: PlayerViewModel,
     padding: PaddingValues
 ) {
     val tabItems = listOf(
@@ -134,7 +134,7 @@ fun TabsPager(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     when (index) {
-                        0 -> TracksScreen()
+                        0 -> TracksScreen(playerViewModel)
                         1 -> PlaylistsScreen(navController = navController)
                         2 -> AlbumsScreen(navController = navController)
                         else -> ArtistsScreen(navController = navController)

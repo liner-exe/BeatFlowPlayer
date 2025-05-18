@@ -16,7 +16,7 @@ class AlbumViewModel @Inject constructor(
     private val audioRepository: AudioRepository
 ) : ViewModel() {
     private val _albums = mutableStateOf<List<Album>>(emptyList())
-    val albums: State<List<Album>?> = _albums
+    val albums: State<List<Album>> = _albums
 
     private val _album = mutableStateOf<Album?>(null)
     val album: State<Album?> = _album

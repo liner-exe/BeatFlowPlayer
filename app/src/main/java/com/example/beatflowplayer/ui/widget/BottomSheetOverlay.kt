@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.beatflowplayer.ui.screens.player_screen.SheetCollapsed
 import com.example.beatflowplayer.ui.screens.player_screen.SheetCollapsedContent
 import com.example.beatflowplayer.ui.screens.player_screen.SheetExpanded
@@ -35,7 +36,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetOverlay(
-    playerViewModel: PlayerViewModel = hiltViewModel()
+    navController: NavHostController,
+    playerViewModel: PlayerViewModel
 ) {
     val track by playerViewModel.currentTrack
 
@@ -106,7 +108,9 @@ fun BottomSheetOverlay(
                     content = {
                         SheetExpandedContent(
                             progress = progress,
-                            scaffoldState = scaffoldState
+                            scaffoldState = scaffoldState,
+                            navController = navController,
+                            playerViewModel = playerViewModel
                         )
                     }
                 )

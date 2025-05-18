@@ -1,6 +1,9 @@
 package com.example.beatflowplayer.ui.screens.player_screen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
@@ -15,6 +18,8 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -22,12 +27,14 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
@@ -38,9 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.beatflowplayer.ui.navigation.Screen
+import com.example.beatflowplayer.domain.navigation.Screen
 import com.example.beatflowplayer.ui.theme.BeatFlowPlayerTheme
 import com.example.beatflowplayer.viewmodel.PlayerViewModel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 data class RowItem(
@@ -51,8 +59,10 @@ data class RowItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudioPlayerUI(
-    navController: NavHostController
+    navController: NavHostController,
+    playerViewModel: PlayerViewModel
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -64,11 +74,19 @@ fun AudioPlayerUI(
         }
     }
 
+    val eventFlow = playerViewModel.eventFlow
+
+    LaunchedEffect(Unit) {
+        eventFlow.collectLatest { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                DrawerMenu(navController = navController)
+                DrawerMenu(navController = navController, playerViewModel = playerViewModel)
             }
         }
     ) {
@@ -132,9 +150,19 @@ fun AudioPlayerUI(
             TabsPager(
                 navController = navController,
                 drawerState = drawerState,
+                playerViewModel = playerViewModel,
                 padding = padding
             )
         }
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        SnackbarHost(
+            hostState = snackbarHostState
+        )
     }
 }
 
@@ -142,6 +170,6 @@ fun AudioPlayerUI(
 @Composable
 fun PreviewAudioPlayerUI() {
     BeatFlowPlayerTheme {
-        AudioPlayerUI(navController = rememberNavController())
+        AudioPlayerUI(navController = rememberNavController(), hiltViewModel())
     }
 }

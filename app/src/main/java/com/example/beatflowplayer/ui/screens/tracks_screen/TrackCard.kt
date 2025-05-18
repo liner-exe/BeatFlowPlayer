@@ -1,6 +1,7 @@
 package com.example.beatflowplayer.ui.screens.tracks_screen
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
@@ -38,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.beatflowplayer.domain.model.Track
+import com.example.beatflowplayer.domain.model.player.QueueContext
+import com.example.beatflowplayer.domain.model.player.SourceType
 import com.example.beatflowplayer.utils.getAlbumCover
 import com.example.beatflowplayer.viewmodel.PlayerViewModel
 
@@ -96,12 +100,10 @@ fun TrackCard(
                 }
             }
 
-
             Spacer(modifier = Modifier.width(20.dp))
 
             Column(verticalArrangement = Arrangement.SpaceAround) {
                 Text(
-                    modifier = Modifier.padding(start = if (isCurrent) 4.dp else 0.dp),
                     text = track.title,
                     color = when (isCurrent) {
                         true -> MaterialTheme.colorScheme.primary
@@ -123,9 +125,18 @@ fun TrackCard(
 @Composable
 fun TrackList(
     tracks: List<Track>,
-    tracksScreenViewModel: PlayerViewModel = hiltViewModel()
+    playerViewModel: PlayerViewModel
 ) {
-    val currentTrack by tracksScreenViewModel.currentTrack
+    val currentTrack by playerViewModel.currentTrack
+    val queueContext by playerViewModel.queueContext
+
+    LaunchedEffect(Unit) {
+        Log.d("TrackList", queueContext.toString())
+    }
+
+    val isTrackCurrent = { track: Track ->
+        track.id == currentTrack?.id && queueContext?.source is SourceType.AllTracks
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.secondaryContainer
@@ -140,10 +151,11 @@ fun TrackList(
             items(tracks) { track ->
                 TrackCard(
                     track = track,
-                    isCurrent = track.id == currentTrack?.id
+                    isCurrent = isTrackCurrent(track)
                 ) {
-                    tracksScreenViewModel.playTrackFromAllTracks(track.id)
-                    tracksScreenViewModel.play()
+                    val context = QueueContext(tracks, SourceType.AllTracks)
+                    playerViewModel.playFromContext(context, track.id)
+                    playerViewModel.play()
                 }
             }
         }

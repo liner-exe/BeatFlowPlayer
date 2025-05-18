@@ -24,6 +24,9 @@ data class TrackEntity(
     @ColumnInfo(name = "album_id")
     val albumId: Long,
 
+    @ColumnInfo(name = "artist_id")
+    val artistId: Long,
+
     @ColumnInfo(name = "is_favourite")
     val isFavourite: Boolean = false
 ) {
@@ -34,6 +37,7 @@ data class TrackEntity(
         duration = duration,
         uri = uri,
         albumId = albumId,
+        artistId = artistId,
         isFavourite = isFavourite
     )
 }

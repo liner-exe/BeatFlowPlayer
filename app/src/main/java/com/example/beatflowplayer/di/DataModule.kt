@@ -6,6 +6,8 @@ import com.example.beatflowplayer.domain.repository.AudioRepository
 import com.example.beatflowplayer.domain.player.QueueManager
 import com.example.beatflowplayer.data.player.QueueManagerImpl
 import com.example.beatflowplayer.domain.AudioLocalDataSource
+import com.example.beatflowplayer.player.PlayerManager
+import com.example.beatflowplayer.viewmodel.PlayerViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +24,6 @@ object DataModule {
     fun provideAudioLocalDataSource(impl: AudioLocalDataSourceImpl): AudioLocalDataSource = impl
 
     @Provides
+    @Singleton
     fun provideQueueManager(impl: QueueManagerImpl): QueueManager = impl
 }

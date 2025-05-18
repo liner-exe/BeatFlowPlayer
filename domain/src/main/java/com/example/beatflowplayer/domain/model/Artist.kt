@@ -1,6 +1,8 @@
 package com.example.beatflowplayer.domain.model
 
 data class Artist(
-    val id: Int,
-    val name: String
+    val id: Long,
+    val name: String,
+    val albums: List<Album>,
+    val tracks: List<Track>
 )

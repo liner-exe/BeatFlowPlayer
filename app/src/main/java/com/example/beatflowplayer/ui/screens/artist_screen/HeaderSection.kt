@@ -1,8 +1,8 @@
-package com.example.beatflowplayer.ui.screens.playlist_screen
+package com.example.beatflowplayer.ui.screens.artist_screen
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,36 +22,49 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.beatflowplayer.R
-import com.example.beatflowplayer.domain.navigation.Screen
-import com.example.beatflowplayer.ui.screens.tracks_screen.TracksScreen
+import com.example.beatflowplayer.domain.model.Artist
+import com.example.beatflowplayer.domain.model.player.QueueContext
+import com.example.beatflowplayer.domain.model.player.SourceType
+import com.example.beatflowplayer.utils.getAlbumCover
+import com.example.beatflowplayer.viewmodel.PlayerViewModel
 
 @Composable
-fun PlaylistScreen(navController: NavHostController) {
+fun HeaderSection(
+    artist: Artist,
+    navController: NavHostController,
+    playerViewModel: PlayerViewModel
+) {
+    val context = LocalContext.current
+
+    val bitmap by produceState<Bitmap?>(initialValue = null, artist.tracks[0]) {
+        value = getAlbumCover(context, artist.tracks[0].uri)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background),
+            .background(color = MaterialTheme.colorScheme.secondaryContainer),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier
                 .padding(bottom = 8.dp)
-                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                .background(color = MaterialTheme.colorScheme.background)
         ) {
             IconButton(
                 onClick = {
@@ -76,20 +89,33 @@ fun PlaylistScreen(navController: NavHostController) {
             }
         }
 
-        Image(
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(15.dp)),
-            painter = painterResource(R.drawable.nominalo),
-            contentDescription = "PlaylistCover"
-        )
+        if (bitmap != null) {
+            Image(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .clip(shape = RoundedCornerShape(15.dp)),
+                bitmap = bitmap!!.asImageBitmap(),
+                contentDescription = "PlaylistCover",
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Image(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .clip(shape = RoundedCornerShape(15.dp)),
+                painter = painterResource(R.drawable.nominalo),
+                contentDescription = "PlaylistCover",
+                contentScale = ContentScale.Crop
+            )
+        }
 
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp, horizontal = 32.dp)
         ) {
             Text(
-                text = "Playlist Name",
+                text = artist.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 color = MaterialTheme.colorScheme.onBackground
@@ -104,7 +130,13 @@ fun PlaylistScreen(navController: NavHostController) {
             Button(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(20.dp),
-                onClick = {},
+                onClick = {
+                    val context = QueueContext(
+                        artist.tracks, SourceType.Artist(artist.id, artist.name)
+                    )
+                    playerViewModel.playFromContext(context, -1)
+                    playerViewModel.play()
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
@@ -147,10 +179,4 @@ fun PlaylistScreen(navController: NavHostController) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun PlaylistScreenPreview() {
-    PlaylistScreen(navController = rememberNavController())
 }

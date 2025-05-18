@@ -15,14 +15,19 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,19 +35,19 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.beatflowplayer.R
-import com.example.beatflowplayer.ui.navigation.Screen
+import com.example.beatflowplayer.domain.navigation.Screen
+import com.example.beatflowplayer.viewmodel.PlayerViewModel
 
 @Composable
 fun DrawerMenu(
-    navController: NavHostController?
+    navController: NavHostController?,
+    playerViewModel: PlayerViewModel
 ) {
     val drawerItems = listOf(
-        DrawerItem(icon = Icons.Filled.Info, title = "Test Name"),
-        DrawerItem(icon = Icons.Filled.Info, title = "Test Name"),
-        DrawerItem(icon = Icons.Filled.Info, title = "Test Name"),
-        DrawerItem(icon = Icons.Filled.Info, title = "Test Name"),
+        DrawerItem(icon = Icons.Filled.Refresh, title = "Refresh Tracks"),
     )
 
     val drawerItemsBottom = listOf(
@@ -85,11 +90,16 @@ fun DrawerMenu(
             }
         }
 
-        drawerItems.forEach {
+        drawerItems.forEachIndexed { index, item ->
             NavigationDrawerItem(
-                label = { Text(text = it.title) },
-                icon = { Icon(it.icon, contentDescription = it.title) },
-                onClick = {},
+                label = { Text(text = item.title) },
+                icon = { Icon(item.icon, contentDescription = item.title) },
+                onClick = {
+                    when(index) {
+                        0 -> playerViewModel.refreshLibrary()
+                        else -> {}
+                    }
+                },
                 selected = false,
                 shape = RectangleShape,
                 colors = NavigationDrawerItemDefaults.colors(

@@ -10,13 +10,14 @@ fun Track.toMediaItem(): MediaItem {
         .setTitle(title)
         .setArtist(artist)
         .setExtras(
-            bundleOf("albumId" to albumId)
+            bundleOf("albumId" to albumId, "artistId" to artistId)
         )
         .build()
 
     return MediaItem.Builder()
-        .setMediaId(id.toString())
-        .setUri(uri)
+        .setMediaId(this.id.toString())
+        .setUri(this.uri)
+        .setTag(this)
         .setMediaMetadata(metadata)
         .build()
 }
@@ -30,6 +31,7 @@ fun MediaItem.toTrack(): Track {
         artist = metadata.artist.toString(),
         duration = metadata.durationMs ?: 0L,
         albumId = metadata.extras!!.getLong("albumId", -1),
+        artistId = metadata.extras!!.getLong("artistId", -1),
         uri = localConfiguration!!.uri.toString(),
     )
 }

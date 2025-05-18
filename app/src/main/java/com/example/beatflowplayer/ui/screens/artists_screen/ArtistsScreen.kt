@@ -1,46 +1,36 @@
 package com.example.beatflowplayer.ui.screens.artists_screen
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.beatflowplayer.R
-import com.example.beatflowplayer.domain.model.Artist
+import androidx.navigation.compose.rememberNavController
+import com.example.beatflowplayer.viewmodel.ArtistViewModel
 
 @Composable
 fun ArtistsScreen(
-    navController: NavHostController? = null
+    navController: NavHostController,
+    artistViewModel: ArtistViewModel = hiltViewModel()
 ) {
-    val artists = listOf(
-        Artist(0, "Morgen"),
-        Artist(1, "MORGENSHTERN"),
-        Artist(2, "И его вторая личность"),
-        Artist(3, "И третья"),
-        Artist(4, "И четвёртая"),
-        Artist(5, "И пятая"),
-        Artist(6, "Надоело считать"),
-        Artist(7, "Поэтому"),
-        Artist(8, "MORGEN"),
-        Artist(9, "MORGEN"),
-        Artist(10, "MORGEN"),
-        Artist(11, "MORGEN"),
-        Artist(12, "MORGEN"),
-        Artist(13, "MORGEN"),
-        Artist(14, "MORGEN"),
-    )
+    LaunchedEffect(Unit) {
+        artistViewModel.loadArtists()
+    }
 
-    ArtistsList(artists, navController)
+    val artists by artistViewModel.artists
+    val isLoading by artistViewModel.isArtistsLoading
+
+    if (isLoading && artists.isEmpty()) {
+        CircularProgressIndicator()
+    } else {
+        ArtistsList(artists, navController)
+    }
 }
 
 @Preview
 @Composable
 fun ArtistsScreenPreview() {
-    ArtistsScreen()
+    ArtistsScreen(rememberNavController())
 }

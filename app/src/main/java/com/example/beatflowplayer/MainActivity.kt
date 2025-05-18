@@ -9,6 +9,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
+import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.beatflowplayer.ui.navigation.AppNavigation
 import com.example.beatflowplayer.ui.theme.BeatFlowPlayerTheme
 import com.example.beatflowplayer.viewmodel.PlayerViewModel
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BeatFlowPlayerTheme {
-                Main()
+                Main(viewModel)
             }
         }
 
@@ -49,8 +51,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Main() {
+fun Main(
+    playerViewModel: PlayerViewModel
+) {
     BeatFlowPlayerTheme {
-        AppNavigation()
+        AppNavigation(playerViewModel)
     }
 }

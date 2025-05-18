@@ -1,9 +1,9 @@
 package com.example.beatflowplayer.data.repository
 
-import android.R
 import android.util.Log
 import com.example.beatflowplayer.domain.AudioLocalDataSource
 import com.example.beatflowplayer.domain.model.Album
+import com.example.beatflowplayer.domain.model.Artist
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.domain.repository.AudioRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +17,7 @@ class AudioRepositoryImpl @Inject constructor(
 ) : AudioRepository {
     private var cachedTracks: List<Track>? = null
     private var cachedAlbums: List<Album>? = null
+    private var cachedArtists: List<Artist>? = null
 
     override suspend fun getAllTracks(): List<Track> {
         if (cachedTracks != null) return cachedTracks!!
@@ -24,6 +25,7 @@ class AudioRepositoryImpl @Inject constructor(
         return withContext(Dispatchers.IO) {
             val result = audioLocalDataSource.getAllTracks()
             cachedTracks = result
+            Log.d("tracks", result.toString())
             result
         }
     }
@@ -32,25 +34,62 @@ class AudioRepositoryImpl @Inject constructor(
         if (cachedAlbums != null) return cachedAlbums!!
 
         return withContext(Dispatchers.IO) {
-            if (cachedTracks == null) {
-                cachedTracks = audioLocalDataSource.getAllTracks()
-            }
+            val tracks = cachedTracks ?: audioLocalDataSource.getAllTracks().also { cachedTracks = it }
 
-            val tracksByAlbum = cachedTracks!!.groupBy { it.albumId }
             val rawAlbums = audioLocalDataSource.getAllAlbums()
+            val albums = buildAlbumsFrom(rawAlbums, tracks)
 
-            val albums = rawAlbums.map { album ->
-                album.copy(
-                    tracks = tracksByAlbum[album.id] ?: emptyList()
-                )
-            }
             cachedAlbums = albums
+            Log.d("repository", albums.toString())
             albums
         }
     }
 
-    override suspend fun getAllArtists(): List<Track> {
-        TODO("Not yet implemented")
+    private fun buildAlbumsFrom(rawAlbums: List<Album>, tracks: List<Track>): List<Album> {
+        val tracksByAlbum = tracks.groupBy { it.albumId }
+
+        return rawAlbums
+            .distinctBy { it.id }
+            .map { album ->
+                album.copy(tracks = tracksByAlbum[album.id] ?: emptyList())
+            }
+    }
+
+    override suspend fun getAllArtists(): List<Artist> {
+        if (cachedArtists != null) return cachedArtists!!
+
+        return try {
+            val tracks = cachedTracks ?: audioLocalDataSource.getAllTracks().also { cachedTracks = it }
+            val albums = cachedAlbums ?: audioLocalDataSource.getAllAlbums().also { cachedAlbums = it }
+
+            val artists = buildArtistsFrom(tracks, albums)
+            cachedArtists = artists
+            artists
+        } catch (e: Exception) {
+            Log.e("AudioRepository", "Error in getAllArtists", e)
+            emptyList()
+        }
+    }
+
+    private fun buildArtistsFrom(tracks: List<Track>, albums: List<Album>): List<Artist> {
+        val artistIds = (tracks.map { it.artistId } + albums.map { it.artistId }).distinct()
+        val tracksByArtist = tracks.groupBy { it.artistId }
+        val albumsByArtist = albums.groupBy { it.artistId }
+
+        return artistIds.map { artistId ->
+            val tracks = tracksByArtist[artistId] ?: emptyList()
+            val albums = albumsByArtist[artistId] ?: emptyList()
+            val name = tracks.firstOrNull()?.artist
+                ?: albums.firstOrNull()?.artist
+                ?: Track.UNKNOWN_ARTIST
+
+            Artist(
+                id = artistId,
+                name = name,
+                tracks = tracks,
+                albums = albums
+            )
+        }
     }
 
     override suspend fun getAllPlaylists(): List<Track> {
@@ -61,15 +100,32 @@ class AudioRepositoryImpl @Inject constructor(
         return cachedAlbums?.firstOrNull { it.id == albumId }
     }
 
+    override suspend fun getArtistById(artistId: Long): Artist? {
+        return cachedArtists?.firstOrNull { it.id == artistId }
+    }
+
     override suspend fun getTracksByAlbumId(albumId: Long): List<Track>? {
         return cachedTracks?.filter { it.albumId == albumId }
     }
 
-    override suspend fun getTracksByArtistId(artistId: Long): List<Track> {
-        TODO("Not yet implemented")
+    override suspend fun getTracksByArtistId(artistId: Long): List<Track>? {
+        return cachedTracks?.filter { it.artistId == artistId }
     }
 
     override suspend fun getTracksByPlaylistId(playlistId: Long): List<Track> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun refreshAll() {
+        withContext(Dispatchers.IO) {
+            val tracks = audioLocalDataSource.getAllTracks()
+            val rawAlbums = audioLocalDataSource.getAllAlbums()
+            val albums = buildAlbumsFrom(rawAlbums, tracks)
+            val artists = buildArtistsFrom(tracks, albums)
+
+            cachedTracks = tracks
+            cachedAlbums = albums
+            cachedArtists = artists
+        }
     }
 }

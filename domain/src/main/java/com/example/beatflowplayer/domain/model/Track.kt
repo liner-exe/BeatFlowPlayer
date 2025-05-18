@@ -7,6 +7,7 @@ data class Track(
     val duration: Long,
     val uri: String,
     val albumId: Long,
+    val artistId: Long,
     val isFavourite: Boolean = false
 ) {
     fun formattedDuration(): String {
@@ -27,7 +28,8 @@ data class Track(
             artist = "",
             duration = -1,
             uri = "",
-            albumId = -1
+            albumId = -1,
+            artistId = -1
         )
     }
 }

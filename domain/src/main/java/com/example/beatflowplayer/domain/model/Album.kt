@@ -3,7 +3,8 @@ package com.example.beatflowplayer.domain.model
 data class Album(
     val id: Long,
     val title: String,
-    val artists: List<String>,
+    val artist: String,
+    val artistId: Long,
     val artworkUri: String,
     val tracks: List<Track>
 ) {
@@ -16,7 +17,8 @@ data class Album(
         val empty = Album(
             -1,
             "",
-            emptyList(),
+            "",
+            -1,
             "",
             emptyList()
         )

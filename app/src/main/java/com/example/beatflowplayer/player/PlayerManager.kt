@@ -31,7 +31,7 @@ class PlayerManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val queueManager: QueueManager
 ) {
-    private val exoPlayer: ExoPlayer by lazy(LazyThreadSafetyMode.NONE) {
+    private val exoPlayer: ExoPlayer by lazy {
         ExoPlayer.Builder(context).build().apply {
             repeatMode = Player.REPEAT_MODE_OFF
             shuffleModeEnabled = false
@@ -125,10 +125,11 @@ class PlayerManager @Inject constructor(
         }
     }
 
-    fun setQueue(tracks: List<Track>, startFrom: Track) {
+    fun setQueue(tracks: List<Track>, startFrom: Long) {
         queueManager.setQueue(tracks)
 
-        val index = queueManager.queue.value.indexOfFirst { it.id == startFrom.id }
+        val index = if (startFrom != -1L)
+            queueManager.queue.value.indexOfFirst { it.id == startFrom } else 0
         queueManager.setCurrentTrack(index)
     }
 
@@ -151,7 +152,7 @@ class PlayerManager @Inject constructor(
     fun toggleLoop() = queueManager.toggleLoop()
     fun toggleShuffle() = queueManager.toggleShuffle()
     fun setSpeed(speed: Float) = exoPlayer.apply {
-        playbackParameters.speed = speed
+        setPlaybackSpeed(speed)
     }
 
     fun release() = exoPlayer.release()

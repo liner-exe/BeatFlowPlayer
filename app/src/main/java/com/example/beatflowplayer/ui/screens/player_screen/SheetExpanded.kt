@@ -226,7 +226,7 @@ fun SheetExpandedContent(
                                 val sourceId = queueContext?.source?.getSourceId()
 
                                 navController.navigate(
-                                    queueContext?.source?.getRouterForSource(
+                                    queueContext?.source?.getRouteForSource(
                                         sourceId.toString()
                                     ).toString()
                                 )

@@ -2,7 +2,6 @@ package com.example.beatflowplayer.domain.player
 
 import com.example.beatflowplayer.domain.model.Track
 import kotlinx.coroutines.flow.StateFlow
-import javax.swing.plaf.nimbus.State
 
 interface QueueManager {
     val tracks: StateFlow<List<Track>>

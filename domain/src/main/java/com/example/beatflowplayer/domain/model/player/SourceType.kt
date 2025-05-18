@@ -22,7 +22,7 @@ sealed class SourceType {
         is Artist -> name
     }
 
-    fun getRouterForSource(id: String): String = when (this) {
+    fun getRouteForSource(id: String): String = when (this) {
         is AllTracks -> ""
         is Playlist -> ""
         is Album -> Screen.AlbumScreen.withId(id)

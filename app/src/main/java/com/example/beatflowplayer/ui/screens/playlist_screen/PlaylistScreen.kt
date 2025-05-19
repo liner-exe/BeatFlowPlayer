@@ -79,7 +79,7 @@ fun PlaylistScreen(navController: NavHostController) {
         Image(
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(15.dp)),
-            painter = painterResource(R.drawable.nominalo),
+            painter = painterResource(R.drawable.default_cover),
             contentDescription = "PlaylistCover"
         )
 

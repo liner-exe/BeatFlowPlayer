@@ -116,6 +116,41 @@ class AudioRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun searchTracks(query: String): List<Track> {
+        val normalizedQuery = query.trim().lowercase()
+        val tracks = cachedTracks ?: audioLocalDataSource.getAllTracks().also { cachedTracks = it }
+
+        return try {
+            tracks.filter {
+                it.title.lowercase().contains(normalizedQuery)
+                        || it.artist.lowercase().contains(normalizedQuery)
+                        || getAlbumById(it.albumId)?.title?.lowercase()!!
+                    .contains(normalizedQuery)
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    override suspend fun searchAlbums(query: String): List<Album> {
+        val normalizedQuery = query.trim().lowercase()
+        val albums = cachedAlbums ?: audioLocalDataSource.getAllAlbums().also { cachedAlbums = it }
+
+        return albums.filter {
+            it.title.lowercase().contains(normalizedQuery)
+                    || it.artist.lowercase().contains(normalizedQuery)
+        }
+    }
+
+    override suspend fun searchArtists(query: String): List<Artist> {
+        val normalizedQuery = query.trim().lowercase()
+        val artists = cachedArtists ?: audioLocalDataSource.getAllArtists().also { cachedArtists = it }
+
+        return artists.filter {
+            it.name.lowercase().contains(normalizedQuery)
+        }
+    }
+
     override suspend fun refreshAll() {
         withContext(Dispatchers.IO) {
             val tracks = audioLocalDataSource.getAllTracks()

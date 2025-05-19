@@ -35,10 +35,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.beatflowplayer.R
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.domain.model.player.QueueContext
 import com.example.beatflowplayer.domain.model.player.SourceType
@@ -82,22 +84,13 @@ fun TrackCard(
                         .clip(RoundedCornerShape(10.dp))
                 )
             } else {
-                Box(
+                Image(
+                    painter = painterResource(R.drawable.default_cover),
+                    contentDescription = "Cover",
                     modifier = Modifier
                         .size(50.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(color = MaterialTheme.colorScheme.onSecondary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = "No cover",
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
+                )
             }
 
             Spacer(modifier = Modifier.width(20.dp))

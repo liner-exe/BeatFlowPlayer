@@ -87,7 +87,7 @@ fun ArtistCard(
                     modifier = Modifier
                         .size(64.dp)
                         .clip(shape = CircleShape),
-                    painter = painterResource(R.drawable.nominalo),
+                    painter = painterResource(R.drawable.default_cover),
                     contentDescription = "Artist`s cover",
                     contentScale = ContentScale.Crop
                 )

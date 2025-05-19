@@ -103,7 +103,7 @@ fun HeaderSection(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .clip(shape = RoundedCornerShape(15.dp)),
-                painter = painterResource(R.drawable.nominalo),
+                painter = painterResource(R.drawable.default_cover),
                 contentDescription = "PlaylistCover",
                 contentScale = ContentScale.Crop
             )

@@ -37,7 +37,9 @@ fun AppNavigation(
                 composable(Screen.PlayerScreen.route) {
                     AudioPlayerUI(navController, playerViewModel)
                 }
-                composable(Screen.SearchScreen.route) { SearchScreen(navController) }
+                composable(Screen.SearchScreen.route) {
+                    SearchScreen(navController, playerViewModel)
+                }
                 composable(Screen.PlaylistScreen.route) { PlaylistScreen(navController) }
                 composable(
                     Screen.AlbumScreen.route,

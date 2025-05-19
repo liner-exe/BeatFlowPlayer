@@ -91,7 +91,7 @@ fun AlbumCard(
                         modifier = Modifier
                             .size(164.dp)
                             .clip(RoundedCornerShape(15.dp)),
-                        painter = painterResource(R.drawable.nominalo),
+                        painter = painterResource(R.drawable.default_cover),
                         contentDescription = "playlistCover"
                     )
                 }

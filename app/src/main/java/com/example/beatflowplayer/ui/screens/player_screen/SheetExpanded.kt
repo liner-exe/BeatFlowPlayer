@@ -208,39 +208,46 @@ fun SheetExpandedContent(
                         )
                     }
 
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(0.7f)
-                            .clipToBounds()
-                            .basicMarquee(
-                                iterations = Int.MAX_VALUE,
-                                animationMode = MarqueeAnimationMode.Immediately,
-                                repeatDelayMillis = 500,
-                                initialDelayMillis = 0,
-                                spacing = MarqueeSpacing(10.dp),
-                                velocity = 20.dp
-                            )
-                            .clickable(
-                                enabled = queueContext?.source !is SourceType.AllTracks
-                            ) {
-                                val sourceId = queueContext?.source?.getSourceId()
+                    Spacer(modifier = Modifier.weight(1f))
 
-                                navController.navigate(
-                                    queueContext?.source?.getRouteForSource(
-                                        sourceId.toString()
-                                    ).toString()
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                // .fillMaxWidth(0.7f)
+                                .clipToBounds()
+                                .basicMarquee(
+                                    iterations = Int.MAX_VALUE,
+                                    animationMode = MarqueeAnimationMode.Immediately,
+                                    repeatDelayMillis = 500,
+                                    initialDelayMillis = 0,
+                                    spacing = MarqueeSpacing(10.dp),
+                                    velocity = 20.dp
                                 )
+                                .clickable(
+                                    enabled = queueContext?.source !is SourceType.AllTracks
+                                ) {
+                                    val sourceId = queueContext?.source?.getSourceId()
 
-                                scope.launch {
-                                    scaffoldState.bottomSheetState.partialExpand()
-                                }
-                            },
-                        text = queueContext?.source?.displayName() ?: "Now Playing",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
-                        softWrap = true
-                    )
+                                    navController.navigate(
+                                        queueContext?.source?.getRouteForSource(
+                                            sourceId.toString()
+                                        ).toString()
+                                    )
+
+                                    scope.launch {
+                                        scaffoldState.bottomSheetState.partialExpand()
+                                    }
+                                },
+                            text = queueContext?.source?.displayName() ?: "Now Playing",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.weight(1f))
 
                     IconButton(
                         modifier = Modifier

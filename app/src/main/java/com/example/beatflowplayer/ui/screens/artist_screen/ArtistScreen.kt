@@ -106,7 +106,8 @@ fun ArtistScreen(
             items(artist!!.tracks) { track ->
                 TrackCard(
                     track = track,
-                    isCurrent = isCurrentTrack(track)
+                    isCurrent = isCurrentTrack(track),
+                    playerViewModel = playerViewModel
                 ) {
                     val context = QueueContext(
                         artist!!.tracks, SourceType.Artist(artist!!.id, artist!!.name)

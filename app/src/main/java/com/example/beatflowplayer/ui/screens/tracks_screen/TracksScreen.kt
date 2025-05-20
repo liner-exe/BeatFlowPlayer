@@ -9,6 +9,7 @@ import com.example.beatflowplayer.viewmodel.PlayerViewModel
 
 @Composable
 fun TracksScreen(
+    isSelected: Boolean,
     playerViewModel: PlayerViewModel
 ) {
     val tracks = playerViewModel.allTracks
@@ -21,5 +22,5 @@ fun TracksScreen(
 @Preview
 @Composable
 fun TracksScreenPreview() {
-    TracksScreen(hiltViewModel())
+    TracksScreen(false, hiltViewModel())
 }

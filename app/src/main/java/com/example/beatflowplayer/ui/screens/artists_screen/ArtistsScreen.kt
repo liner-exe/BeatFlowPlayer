@@ -12,6 +12,7 @@ import com.example.beatflowplayer.viewmodel.ArtistViewModel
 
 @Composable
 fun ArtistsScreen(
+    isSelected: Boolean,
     navController: NavHostController,
     artistViewModel: ArtistViewModel = hiltViewModel()
 ) {
@@ -32,5 +33,5 @@ fun ArtistsScreen(
 @Preview
 @Composable
 fun ArtistsScreenPreview() {
-    ArtistsScreen(rememberNavController())
+    ArtistsScreen(false, rememberNavController())
 }

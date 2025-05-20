@@ -16,7 +16,7 @@ import com.example.beatflowplayer.viewmodel.PlayerViewModel
 @Composable
 fun QueueContent(
     onDismissRequest: () -> Unit,
-    playerViewModel: PlayerViewModel = hiltViewModel()
+    playerViewModel: PlayerViewModel
 ) {
     val queue = playerViewModel.trackQueue
 
@@ -33,7 +33,8 @@ fun QueueContent(
             items(queue.value) { track ->
                 TrackCard(
                     track,
-                    track.id == currentTrack.value?.id
+                    track.id == currentTrack.value?.id,
+                    playerViewModel = playerViewModel
                 ) {
 
                 }
@@ -45,5 +46,5 @@ fun QueueContent(
 @Preview
 @Composable
 fun QueueContentPreview() {
-    QueueContent({})
+    QueueContent({}, hiltViewModel())
 }

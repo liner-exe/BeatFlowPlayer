@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -69,7 +68,8 @@ fun AlbumScreen(
             items(album!!.tracks) { track ->
                 TrackCard(
                     track = track,
-                    isCurrent = isCurrentTrack(track)
+                    isCurrent = isCurrentTrack(track),
+                    playerViewModel = playerViewModel
                 ) {
                     val context = QueueContext(
                         album!!.tracks,

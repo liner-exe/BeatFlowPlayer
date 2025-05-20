@@ -1,8 +1,10 @@
 package com.example.beatflowplayer.viewmodel
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.material3.Snackbar
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.SortedMap
 import javax.inject.Inject
@@ -45,7 +48,9 @@ class PlayerViewModel @Inject constructor(
 
     private val _trackQueue = MutableStateFlow<List<Track>>(emptyList())
     val trackQueue: StateFlow<List<Track>> = _trackQueue.asStateFlow()
-    private var currentIndex = 0
+
+    private val _currentIndex = mutableIntStateOf(-1)
+    val currentIndex: State<Int> = _currentIndex
 
     private val _duration = mutableLongStateOf(0L)
     val duration: State<Long> = _duration
@@ -114,6 +119,12 @@ class PlayerViewModel @Inject constructor(
             launch {
                 playerManager.tracks.collect { tracks ->
                     _trackQueue.value = tracks
+                }
+            }
+
+            launch {
+                playerManager.currentIndex.collect { index ->
+                    _currentIndex.value = index
                 }
             }
         }

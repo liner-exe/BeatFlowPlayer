@@ -6,7 +6,8 @@ data class Album(
     val artist: String,
     val artistId: Long,
     val artworkUri: String,
-    val tracks: List<Track>
+    val tracks: List<Track>,
+    var isPinned: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean = other is Album && id == other.id
     override fun hashCode(): Int = id.hashCode()

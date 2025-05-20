@@ -134,10 +134,19 @@ fun TabsPager(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
                     when (index) {
-                        0 -> TracksScreen(playerViewModel)
-                        1 -> PlaylistsScreen(navController = navController)
-                        2 -> AlbumsScreen(navController = navController)
-                        else -> ArtistsScreen(navController = navController)
+                        0 -> TracksScreen(pagerState.currentPage == 0, playerViewModel)
+                        1 -> PlaylistsScreen(
+                            pagerState.currentPage == 1,
+                            navController = navController
+                        )
+                        2 -> AlbumsScreen(
+                            pagerState.currentPage == 2,
+                            navController = navController
+                        )
+                        else -> ArtistsScreen(
+                            pagerState.currentPage == 3,
+                            navController = navController
+                        )
                     }
                 }
             }

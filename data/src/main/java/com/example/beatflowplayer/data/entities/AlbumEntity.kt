@@ -22,7 +22,10 @@ data class AlbumEntity(
     val artworkUri: String,
 
     @ColumnInfo(name = "track_ids")
-    val tracksIds: String
+    val tracksIds: String,
+
+    @ColumnInfo(name = "is_pinned")
+    val isPinned: Boolean
 ) {
     fun toAlbum() = Album(
         id = id,
@@ -30,6 +33,7 @@ data class AlbumEntity(
         artist = artist,
         artworkUri = artworkUri,
         artistId = artistId,
-        tracks = emptyList()
+        tracks = emptyList(),
+        isPinned = isPinned
     )
 }

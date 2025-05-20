@@ -1,13 +1,14 @@
 package com.example.beatflowplayer.ui.screens.player_screen
 
 import android.graphics.Bitmap
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +32,6 @@ import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -53,16 +53,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.palette.graphics.Palette
 import com.example.beatflowplayer.R
@@ -160,18 +157,31 @@ fun SheetExpandedContent(
         }
     }
 
-    val gradient = Brush.verticalGradient(
-        colors = listOf(
-            accentColor ?: Color.White,
-            accentColor?.copy(alpha = 0.7f) ?: Color.White,
-            Color.Black.copy(alpha = 0.9f)
-        )
+    val targetColor = accentColor ?: Color.White
+
+    val topColor by animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = tween(400)
+    )
+
+    val middleColor by animateColorAsState(
+        targetValue = targetColor.copy(0.7f),
+        animationSpec = tween(400)
+    )
+
+    val bottomColor by animateColorAsState(
+        targetValue = Color.Black.copy(0.9f),
+        animationSpec = tween(400)
+    )
+
+    val animatedGradient = Brush.verticalGradient(
+        colors = listOf(topColor, middleColor, bottomColor)
     )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(gradient)
+            .background(animatedGradient)
             .alpha(alpha = progress),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -269,30 +279,13 @@ fun SheetExpandedContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    if (bitmap != null) {
-                        Image(
-                            bitmap = bitmap!!.asImageBitmap(),
-                            contentDescription = "Album Cover",
-                            modifier = Modifier
-                                .size(300.dp)
-                                .clip(shape = RoundedCornerShape(12.dp))
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .size(300.dp)
-                                .clip(shape = RoundedCornerShape(12.dp))
-                                .background(color = Color.Black),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "NO IMAGE",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                color = Color.White
-                            )
-                        }
-                    }
+                    TrackCoversPager(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        playerViewModel = playerViewModel,
+                        context = context
+                    )
 
                     Spacer(modifier = Modifier.height(32.dp))
 
@@ -409,7 +402,9 @@ fun SheetExpandedContent(
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -502,7 +497,7 @@ fun SheetExpandedContent(
                             },
                             Modifier
                                 .clip(shape = CircleShape)
-                                .size(48.dp)
+                                .size(36.dp)
                                 .background(color = Color.Transparent)
                         ) {
                             Icon(
@@ -518,10 +513,11 @@ fun SheetExpandedContent(
 
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(0.95f),
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         var isFavourite by remember { mutableStateOf(false) }
 
                         IconButton(
@@ -550,6 +546,9 @@ fun SheetExpandedContent(
     }
 
     if (isQueueShowed) {
-        QueueContent(onDismissRequest = { isQueueShowed = false })
+        QueueContent(
+            onDismissRequest = { isQueueShowed = false },
+            playerViewModel = playerViewModel
+        )
     }
 }

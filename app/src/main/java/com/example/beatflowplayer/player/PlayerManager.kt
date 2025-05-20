@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,6 +43,9 @@ class PlayerManager @Inject constructor(
 
     private val _currentTrack = MutableStateFlow<Track?>(null)
     val currentTrack: StateFlow<Track?> = _currentTrack.asStateFlow()
+
+    private val _currentIndex = MutableStateFlow<Int>(0)
+    val currentIndex: StateFlow<Int> = _currentIndex.asStateFlow()
 
     private val _tracks = MutableStateFlow<List<Track>>(emptyList())
     val tracks: StateFlow<List<Track>> = _tracks
@@ -110,6 +114,7 @@ class PlayerManager @Inject constructor(
 
         scope.launch {
             queueManager.currentIndex.collect { index ->
+                _currentIndex.update { index }
                 if (index >= 0) exoPlayer.seekTo(index, 0)
             }
         }

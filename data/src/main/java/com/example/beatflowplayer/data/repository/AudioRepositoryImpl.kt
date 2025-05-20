@@ -25,7 +25,6 @@ class AudioRepositoryImpl @Inject constructor(
         return withContext(Dispatchers.IO) {
             val result = audioLocalDataSource.getAllTracks()
             cachedTracks = result
-            Log.d("tracks", result.toString())
             result
         }
     }
@@ -40,7 +39,6 @@ class AudioRepositoryImpl @Inject constructor(
             val albums = buildAlbumsFrom(rawAlbums, tracks)
 
             cachedAlbums = albums
-            Log.d("repository", albums.toString())
             albums
         }
     }

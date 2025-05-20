@@ -20,6 +20,9 @@ class QueueManagerImpl @Inject constructor() : QueueManager {
     private val _queue = MutableStateFlow<List<Track>>(emptyList())
     override val queue: StateFlow<List<Track>> = _queue.asStateFlow()
 
+    private val _upNextQueue = MutableStateFlow<List<Track>>(emptyList())
+    override val upNextQueue: StateFlow<List<Track>> = _upNextQueue.asStateFlow()
+
     private val _currentTrack = MutableStateFlow<Track?>(null)
     override val currentTrack: StateFlow<Track?> = _currentTrack.asStateFlow()
 
@@ -54,22 +57,46 @@ class QueueManagerImpl @Inject constructor() : QueueManager {
 
     override fun updateQueue() {
         val current = _currentTrack.value
-        _queue.value = if (_isShuffle.value) {
+        val baseQueue = if (_isShuffle.value) {
             val otherTracks = _tracks.value.filter { it.id != current?.id }
             val shuffledTracks = otherTracks.shuffled()
-            if (current != null) listOf(current) + shuffledTracks else shuffledTracks
+            if (current != null) listOf(current) + _upNextQueue.value + shuffledTracks else shuffledTracks
         } else {
             _tracks.value
         }
 
-        val newIndex = _queue.value.indexOfFirst { it.id == current?.id }
-        _currentIndex.value = newIndex
-        _currentTrack.value = _queue.value.getOrNull(newIndex)
+        val newQueue = if (current != null) {
+            val currentIndexInBase = baseQueue.indexOfFirst { it.id == current.id }
+            if (currentIndexInBase >= 0) {
+                val before = baseQueue.take(currentIndexInBase + 1)
+                val after = baseQueue.drop(currentIndexInBase + 1)
+                before + _upNextQueue.value + after
+            } else {
+                baseQueue + _upNextQueue.value
+            }
+        } else {
+            baseQueue + _upNextQueue.value
+        }
+
+        _queue.value = newQueue
+
+        val newIndex = newQueue.indexOfFirst { it.id == current?.id }
+        _currentIndex.value = if (newIndex >= 0) newIndex else 0
+        _currentTrack.value = newQueue.getOrNull(_currentIndex.value)
 
         if (_loopMode.value == LoopMode.ALL && _currentIndex.value == -1) {
             _currentIndex.value = 0
-            _currentTrack.value = _queue.value.getOrNull(0)
+            _currentTrack.value = newQueue.getOrNull(0)
         }
+    }
+
+    override fun addToUpNext(track: Track) {
+        _upNextQueue.update { it + track }
+        updateQueue()
+    }
+
+    override fun clearUpNext() {
+        TODO("Not yet implemented")
     }
 
     override fun skipToNext() {
@@ -85,8 +112,8 @@ class QueueManagerImpl @Inject constructor() : QueueManager {
                 }
                 LoopMode.ONE -> { }
                 LoopMode.NONE -> {
-                    _currentIndex.update { -1 }
-                    _currentTrack.update { null }
+                    _currentIndex.update { 0 }
+                    _currentTrack.update { _queue.value[0] }
                 }
             }
         }
@@ -105,7 +132,8 @@ class QueueManagerImpl @Inject constructor() : QueueManager {
                 }
                 LoopMode.ONE -> { }
                 LoopMode.NONE -> {
-                    _currentTrack.value = null
+                    _currentIndex.value = _queue.value.lastIndex
+                    _currentTrack.value = _queue.value.lastOrNull()
                 }
             }
         }

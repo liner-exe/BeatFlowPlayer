@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -58,7 +59,7 @@ fun TrackCard(
 ) {
     val context = LocalContext.current
     val bitmap by produceState<Bitmap?>(initialValue = null, track) {
-        value = getAlbumCover(context, track.uri, 50, 50)
+        value = getAlbumCover(context, track.uri, 64, 64)
     }
 
     val isPlaying by playerViewModel.isPlaying
@@ -123,15 +124,6 @@ fun TrackCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Icon(
-                        modifier = Modifier
-                            .padding(end = 16.dp),
-                        painter = painterResource(R.drawable.more_horizontal),
-                        contentDescription = "More"
-                    )
                 }
 
                 Text(
@@ -141,6 +133,15 @@ fun TrackCard(
                     fontSize = 14.sp
                 )
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Icon(
+                modifier = Modifier
+                    .padding(end = 16.dp),
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "More"
+            )
         }
     }
 }

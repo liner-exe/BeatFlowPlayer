@@ -3,6 +3,7 @@ package com.example.beatflowplayer.ui.screens.player_screen
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -93,9 +95,12 @@ fun SheetCollapsedContent(
 
             Box(
                 modifier = Modifier
+                    .fillMaxSize()
                     .background(color = MaterialTheme.colorScheme.background)
             ) {
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (bitmap != null) {
@@ -108,35 +113,33 @@ fun SheetCollapsedContent(
                             contentDescription = "AlbumCover"
                         )
                     } else {
-                        Box(
+                        Image(
                             modifier = Modifier
                                 .size(64.dp)
                                 .padding(8.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(color = Color.Black),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "NO IMAGE",
-                                fontSize = 4.sp,
-                                color = Color.White
-                            )
-                        }
+                                .clip(RoundedCornerShape(10.dp)),
+                            painter = painterResource(R.drawable.default_cover),
+                            contentDescription = "DefaultCover"
+                        )
                     }
 
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(0.6f)
+                            .fillMaxWidth(0.8f)
+                            .padding(start = 8.dp)
                     ) {
                         Text(
                             text = track!!.title,
                             color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.padding(start = 8.dp)
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
+
                         Text(
                             text = track!!.artist,
                             color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.padding(start = 8.dp)
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
@@ -148,7 +151,6 @@ fun SheetCollapsedContent(
                         },
                         modifier = Modifier
                             .size(96.dp)
-                            .padding(8.dp)
                     ) {
                         Icon(
                             modifier = Modifier.size(48.dp),

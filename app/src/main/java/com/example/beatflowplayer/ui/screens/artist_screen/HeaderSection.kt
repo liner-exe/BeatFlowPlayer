@@ -51,7 +51,10 @@ fun HeaderSection(
 ) {
     val context = LocalContext.current
 
-    val bitmap by produceState<Bitmap?>(initialValue = null, artist.tracks[0]) {
+    val bitmap by produceState<Bitmap?>(
+        initialValue = null,
+        if (artist.tracks.isNotEmpty()) artist.tracks[0] else null
+    ) {
         value = getAlbumCover(context, artist.tracks[0].uri)
     }
 

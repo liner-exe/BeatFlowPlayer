@@ -10,7 +10,9 @@ val VeryDarkGreenBlue = Color(0xFF022027)
 val CyberpunkRed = Color(0xFFC5003C)
 val CyberpunkYellow = Color(0xFFF3E600)
 
-val BrightRed = Color(0xFFFB2B56)
+// val BrightRed = Color(0xFFFB2B56)
+val PrimaryCyan = Color(0xFF50FAFF)
+val BlueE = Color(0xFF4768D5)
 val MidnightPurple = Color(0xFF191624)
 val ShadowPurple = Color(0xFF2F2C38)
 

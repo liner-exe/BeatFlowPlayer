@@ -2,10 +2,11 @@ package com.example.beatflowplayer.ui.screens.tracks_screen
 
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,9 +33,8 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -64,84 +64,107 @@ fun TrackCard(
 
     val isPlaying by playerViewModel.isPlaying
 
-    Card(
-        shape = RectangleShape,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+    OutlinedCard(
+        modifier = Modifier
+            .padding(horizontal = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
         ),
-        onClick = { onClick() }
+        onClick = { onClick() },
+        border = BorderStroke(1.dp, if (isCurrent) Color.White else
+            MaterialTheme.colorScheme.onSecondaryContainer.copy(0.3f))
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = 16.dp,
-                    horizontal = 2.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(modifier = Modifier.width(20.dp))
-
-            if (bitmap != null) {
-                Image(
-                    bitmap = bitmap!!.asImageBitmap(),
-                    contentDescription = "Cover",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                )
-            } else {
-                Image(
-                    painter = painterResource(R.drawable.default_cover),
-                    contentDescription = "Cover",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                )
-            }
-
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Column {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
+                .background(
                     if (isCurrent) {
-                        SoundWaveIndicator(
-                            isPlaying = isPlaying
+//                        Brush.horizontalGradient(
+//                            listOf(
+//                                Color(0xFF3949AB),
+//                                Color(0xFF6C63FF)
+//                            )
+//                        )
+                        Brush.verticalGradient(
+                            listOf(Color.Transparent, Color.Transparent)
+                        )
+                    } else {
+                        Brush.verticalGradient(
+                            listOf(Color.Transparent, Color.Transparent)
+                        )
+                    }
+                )
+                .padding(vertical = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.width(20.dp))
+
+                if (bitmap != null) {
+                    Image(
+                        bitmap = bitmap!!.asImageBitmap(),
+                        contentDescription = "Cover",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.default_cover),
+                        contentDescription = "Cover",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                Column {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        if (isCurrent) {
+                            SoundWaveIndicator(
+                                isPlaying = isPlaying
+                            )
+                        }
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(0.85f),
+                            text = track.title,
+                            color = when (isCurrent) {
+                                true -> MaterialTheme.colorScheme.primary
+                                false -> MaterialTheme.colorScheme.onBackground
+                            },
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
                     Text(
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f),
-                        text = track.title,
-                        color = when (isCurrent) {
-                            true -> MaterialTheme.colorScheme.primary
-                            false -> MaterialTheme.colorScheme.onBackground
-                        },
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        text = track.artist,
+                        color = if (isCurrent) Color.LightGray else
+                            MaterialTheme.colorScheme.onSecondaryContainer,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp
                     )
                 }
 
-                Text(
-                    text = track.artist,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp
+                Spacer(modifier = Modifier.weight(1f))
+
+                Icon(
+                    modifier = Modifier
+                        .padding(end = 16.dp),
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "More"
                 )
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Icon(
-                modifier = Modifier
-                    .padding(end = 16.dp),
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "More"
-            )
         }
     }
 }
@@ -154,34 +177,33 @@ fun TrackList(
     val currentTrack by playerViewModel.currentTrack
     val queueContext by playerViewModel.queueContext
 
-    LaunchedEffect(Unit) {
-        Log.d("TrackList", queueContext.toString())
-    }
-
     val isTrackCurrent = { track: Track ->
         track.id == currentTrack?.id && queueContext?.source is SourceType.AllTracks
     }
 
-    Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF1C1B2F),
+                        Color(0xFF2B284A)
+                    )
                 )
-        ) {
-            items(tracks) { track ->
-                TrackCard(
-                    track = track,
-                    isCurrent = isTrackCurrent(track),
-                    playerViewModel = playerViewModel
-                ) {
-                    val context = QueueContext(tracks, SourceType.AllTracks)
-                    playerViewModel.playFromContext(context, track.id)
-                    playerViewModel.play()
-                }
+            )
+            .padding(vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        items(tracks) { track ->
+            TrackCard(
+                track = track,
+                isCurrent = isTrackCurrent(track),
+                playerViewModel = playerViewModel
+            ) {
+                val context = QueueContext(tracks, SourceType.AllTracks)
+                playerViewModel.playFromContext(context, track.id)
+                playerViewModel.play()
             }
         }
     }

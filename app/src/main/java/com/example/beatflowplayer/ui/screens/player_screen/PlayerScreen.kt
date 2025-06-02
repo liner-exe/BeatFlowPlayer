@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,9 +42,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -95,7 +100,9 @@ fun AudioPlayerUI(
                 .statusBarsPadding()
                 .navigationBarsPadding(),
             topBar = {
-                TopAppBar(
+                CenterAlignedTopAppBar(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.background,
                         titleContentColor = MaterialTheme.colorScheme.secondary,
@@ -119,7 +126,9 @@ fun AudioPlayerUI(
                                 ) {
                                     append("Player")
                                 }
-                            }
+                            },
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 28.sp
                         )
                     },
                     navigationIcon = {
@@ -129,7 +138,10 @@ fun AudioPlayerUI(
                                     drawerState.open()
                                 }
                             }) {
-                            Icon(Icons.Filled.Menu, contentDescription = "OpenMenu")
+                            Icon(
+                                modifier = Modifier.size(32.dp),
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "OpenMenu")
                         }
                     },
                     actions = {
@@ -139,7 +151,8 @@ fun AudioPlayerUI(
                             }
                         ) {
                             Icon(
-                                Icons.Filled.Search,
+                                modifier = Modifier.size(32.dp),
+                                imageVector = Icons.Filled.Search,
                                 tint = MaterialTheme.colorScheme.onBackground,
                                 contentDescription = "SearchButton"
                             )

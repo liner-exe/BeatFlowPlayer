@@ -2,8 +2,7 @@ package com.example.beatflowplayer.data.player
 
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.domain.player.QueueManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import com.example.beatflowplayer.domain.player.LoopMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,16 +29,10 @@ class QueueManagerImpl @Inject constructor() : QueueManager {
     override val currentIndex: StateFlow<Int> = _currentIndex.asStateFlow()
 
     private val _loopMode = MutableStateFlow<LoopMode>(LoopMode.NONE)
-    val loopMode: StateFlow<LoopMode> = _loopMode.asStateFlow()
+    override val loopMode: StateFlow<LoopMode> = _loopMode.asStateFlow()
 
     private val _isShuffle = MutableStateFlow<Boolean>(false)
     val isShuffle: StateFlow<Boolean> = _isShuffle.asStateFlow()
-
-    enum class LoopMode {
-        NONE,
-        ONE,
-        ALL
-    }
 
     override fun setQueue(tracks: List<Track>) {
         _tracks.value = tracks

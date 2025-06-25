@@ -1,16 +1,14 @@
 package com.example.beatflowplayer.player
 
 import android.content.Context
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
-import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.data.mapper.toMediaItem
 import com.example.beatflowplayer.data.mapper.toTrack
-import com.example.beatflowplayer.data.player.QueueManagerImpl
+import com.example.beatflowplayer.domain.model.Track
+import com.example.beatflowplayer.domain.player.LoopMode
 import com.example.beatflowplayer.domain.player.QueueManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +17,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -64,6 +61,10 @@ class PlayerManager @Inject constructor(
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (_isPlaying.value && playbackState == Player.STATE_BUFFERING)
                     _isPlaying.value = true
+
+                if (playbackState == Player.STATE_ENDED) {
+                    onTrackCompleted()
+                }
 
                 if (playbackState == Player.STATE_READY) {
                     _duration.value = exoPlayer.duration.milliseconds.inWholeMilliseconds
@@ -138,15 +139,22 @@ class PlayerManager @Inject constructor(
         queueManager.setCurrentTrack(index)
     }
 
-    fun setAlbumQueue(tracks: List<Track>) {
-        queueManager.setQueue(tracks)
-    }
-
     fun addToQueue(track: Track) = queueManager.addToQueue(track)
 
     fun play() {
         exoPlayer.prepare()
         exoPlayer.play()
+    }
+
+    fun onTrackCompleted() {
+        when (queueManager.loopMode.value) {
+            LoopMode.ALL -> {
+                queueManager.skipToNext()
+            }
+
+            LoopMode.ONE -> { seekTo(0) }
+            LoopMode.NONE -> {}
+        }
     }
 
     fun pause() = exoPlayer.pause()

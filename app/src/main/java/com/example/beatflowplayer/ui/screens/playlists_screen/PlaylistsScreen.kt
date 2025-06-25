@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,17 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun PlaylistsScreen(
     isSelected: Boolean,
-    navController: NavHostController? = null
+    navController: NavHostController
 ) {
-    val playlists = emptyList<Playlist>()
-
     Box(modifier = Modifier.fillMaxSize()) {
-        PlayList(playlists, navController)
-
         Box(
             modifier = Modifier
                 .fillMaxSize(),
@@ -45,7 +42,7 @@ fun PlaylistsScreen(
             enter = scaleIn(),
             modifier = Modifier.align(Alignment.BottomEnd)
         ) {
-            Button(
+            ElevatedButton(
                 onClick = {},
                 modifier = Modifier
                     .size(96.dp)
@@ -53,7 +50,7 @@ fun PlaylistsScreen(
                     .padding(16.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.tertiary
                 )
             ) {
                 Icon(
@@ -68,5 +65,5 @@ fun PlaylistsScreen(
 @Preview
 @Composable
 fun PlaylistsScreenPreview() {
-    PlaylistsScreen(false)
+    PlaylistsScreen(isSelected = false, navController = rememberNavController())
 }

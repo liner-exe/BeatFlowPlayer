@@ -137,7 +137,7 @@ fun HeaderSection(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            Button(
+            ElevatedButton(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp),
                 onClick = {

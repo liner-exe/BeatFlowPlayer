@@ -55,6 +55,7 @@ fun TrackCard(
     track: Track,
     isCurrent: Boolean,
     playerViewModel: PlayerViewModel,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -65,7 +66,7 @@ fun TrackCard(
     val isPlaying by playerViewModel.isPlaying
 
     OutlinedCard(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 8.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.outlinedCardColors(

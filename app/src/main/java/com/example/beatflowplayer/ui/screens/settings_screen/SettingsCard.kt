@@ -2,6 +2,7 @@ package com.example.beatflowplayer.ui.screens.settings_screen
 
 import android.widget.Space
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.sharp.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,14 +35,16 @@ import androidx.compose.ui.unit.sp
 data class SettingsCardItem(
     val title: String,
     val description: String,
-    val imageVector: ImageVector
+    val imageVector: ImageVector,
+    val iconColor: Color
 )
 
 @Composable
 fun SettingsCard(
     title: String,
     description: String,
-    imageVector: ImageVector
+    imageVector: ImageVector,
+    iconColor: Color = Color.White
 ) {
     Card(
         modifier = Modifier
@@ -58,10 +62,11 @@ fun SettingsCard(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
+            Icon(
                 modifier = Modifier
                     .size(48.dp),
                 imageVector = imageVector,
+                tint = iconColor,
                 contentDescription = null
             )
 

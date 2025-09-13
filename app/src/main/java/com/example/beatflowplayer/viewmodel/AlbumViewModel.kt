@@ -38,4 +38,12 @@ class AlbumViewModel @Inject constructor(
             _album.value = audioRepository.getAlbumById(id)
         }
     }
+
+    fun togglePin(album: Album) {
+        viewModelScope.launch {
+            _albums.value = _albums.value.map {
+                if (it.id == album.id) it.copy(isPinned = !it.isPinned) else it
+            }
+        }
+    }
 }

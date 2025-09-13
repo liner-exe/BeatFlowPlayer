@@ -46,10 +46,6 @@ fun AlbumScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        Log.d("AlbumScreen", queueContext.toString())
-    }
-
     if (album != null) {
         LazyColumn (
             modifier = Modifier
@@ -61,7 +57,7 @@ fun AlbumScreen(
             item {
                 HorizontalDivider(
                     modifier = Modifier
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 12.dp),
                     thickness = 3.dp
                 )
             }

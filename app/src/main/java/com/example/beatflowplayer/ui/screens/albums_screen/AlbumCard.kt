@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -64,7 +62,6 @@ import com.example.beatflowplayer.R
 import com.example.beatflowplayer.domain.model.Album
 import com.example.beatflowplayer.domain.navigation.Screen
 import com.example.beatflowplayer.utils.getAlbumCover
-import com.example.beatflowplayer.viewmodel.AlbumViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -234,12 +231,14 @@ fun AlbumsList(
     LazyVerticalGrid(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(
-                colors = listOf(
-                    Color(0xFF1C1B2F),
-                    Color(0xFF2B284A)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF1C1B2F),
+                        Color(0xFF2B284A)
+                    )
                 )
-            )),
+            ),
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -29,9 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.beatflowplayer.R
 import com.example.beatflowplayer.domain.navigation.Screen
+import com.example.beatflowplayer.domain.repository.AudioRepository
+import com.example.beatflowplayer.viewmodel.PlayerViewModel
 
 @Composable
 fun PlaylistCard(
@@ -80,8 +83,11 @@ fun PlaylistCard(
 @Composable
 fun PlayList(
     playlists: List<Playlist>,
-    navController: NavHostController? = null
+    navController: NavHostController? = null,
+    playerViewModel: PlayerViewModel = hiltViewModel()
 ) {
+    val favourites = playerViewModel
+
     LazyVerticalGrid(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.secondaryContainer),

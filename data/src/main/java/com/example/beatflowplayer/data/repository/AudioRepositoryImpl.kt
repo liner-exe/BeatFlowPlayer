@@ -4,7 +4,9 @@ import android.util.Log
 import com.example.beatflowplayer.domain.AudioLocalDataSource
 import com.example.beatflowplayer.domain.model.Album
 import com.example.beatflowplayer.domain.model.Artist
+import com.example.beatflowplayer.domain.model.Playlist
 import com.example.beatflowplayer.domain.model.Track
+import com.example.beatflowplayer.domain.model.player.SourceType
 import com.example.beatflowplayer.domain.repository.AudioRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -90,7 +92,7 @@ class AudioRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllPlaylists(): List<Track> {
+    override suspend fun getAllPlaylists(): List<Playlist> {
         TODO("Not yet implemented")
     }
 

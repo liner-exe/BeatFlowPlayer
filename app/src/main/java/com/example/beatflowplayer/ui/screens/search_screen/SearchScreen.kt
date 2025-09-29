@@ -3,8 +3,6 @@ package com.example.beatflowplayer.ui.screens.search_screen
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,7 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.FilterChip
@@ -43,7 +40,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -65,6 +61,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.beatflowplayer.domain.enums.SearchCategory
+import com.example.beatflowplayer.domain.model.player.QueueContext
+import com.example.beatflowplayer.domain.model.player.SourceType
 import com.example.beatflowplayer.ui.screens.albums_screen.AlbumCard
 import com.example.beatflowplayer.ui.screens.artists_screen.ArtistCard
 import com.example.beatflowplayer.ui.screens.tracks_screen.TrackCard
@@ -249,7 +247,8 @@ fun SearchScreen(
                                 isCurrent = false,
                                 playerViewModel = playerViewModel
                             ) {
-
+                                val context = QueueContext(tracks, SourceType.AllTracks)
+                                playerViewModel.playFromContext(context, track.id)
                             }
                         }
                     }

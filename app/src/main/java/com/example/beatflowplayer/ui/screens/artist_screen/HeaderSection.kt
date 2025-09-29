@@ -16,7 +16,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -56,7 +55,7 @@ fun HeaderSection(
         initialValue = null,
         if (artist.tracks.isNotEmpty()) artist.tracks[0] else null
     ) {
-        value = getAlbumCover(context, artist.tracks[0].uri)
+        value = getAlbumCover(context, artist.tracks[0].uri, 500, 500)
     }
 
     Column(

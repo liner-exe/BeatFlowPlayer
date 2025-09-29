@@ -321,7 +321,7 @@ fun SheetExpandedContent(
 
                     Slider(
                         modifier = Modifier
-                            .fillMaxWidth(0.8f),
+                            .fillMaxWidth(0.9f),
                         value = animatedPosition.value,
                         onValueChange = { newValue ->
                             sliderPosition = newValue
@@ -385,7 +385,7 @@ fun SheetExpandedContent(
                     )
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.8f),
+                        modifier = Modifier.fillMaxWidth(0.9f),
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(

@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -82,7 +83,7 @@ fun AlbumCard(
         isPinned = album.isPinned
     }
 
-    OutlinedCard(
+    Card(
         modifier = modifier
             .fillMaxSize()
             .pointerInput(Unit) {
@@ -93,9 +94,8 @@ fun AlbumCard(
                     }
                 )
             },
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondaryContainer.copy(0.3f)),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = Color.Transparent
         ),
         shape = RoundedCornerShape(30.dp)
     ) {

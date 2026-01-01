@@ -63,6 +63,8 @@ fun AlbumScreen(
             }
             items(album!!.tracks) { track ->
                 TrackCard(
+                    modifier = Modifier
+                        .padding(bottom = 4.dp),
                     track = track,
                     isCurrent = isCurrentTrack(track),
                     playerViewModel = playerViewModel

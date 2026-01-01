@@ -100,8 +100,7 @@ fun TrackCoversPager(
             state = pagerState,
             modifier = modifier
                 .fillMaxWidth()
-                .height(300.dp)
-                .clip(shape = RoundedCornerShape(12.dp)),
+                .height(300.dp),
         ) { page ->
             val image = covers.getOrNull(page)
             Box(

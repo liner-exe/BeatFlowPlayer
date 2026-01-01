@@ -1,5 +1,12 @@
 package com.example.beatflowplayer.ui.navigation
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -32,7 +39,29 @@ fun AppNavigation(
             NavHost(
                 navController = navController,
                 startDestination = Screen.PlayerScreen.route,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(500, easing = FastOutSlowInEasing)
+                    )
+                },
+                exitTransition = {
+                    fadeOut(
+                        animationSpec = tween(200)
+                    )
+                },
+                popEnterTransition = {
+                    fadeIn(
+                        animationSpec = tween(500)
+                    )
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(600, easing = FastOutSlowInEasing)
+                    )
+                },
             ) {
                 composable(Screen.PlayerScreen.route) {
                     AudioPlayerUI(navController, playerViewModel)

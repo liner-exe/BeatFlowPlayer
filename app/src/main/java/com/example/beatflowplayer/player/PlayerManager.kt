@@ -62,10 +62,6 @@ class PlayerManager @Inject constructor(
                 if (_isPlaying.value && playbackState == Player.STATE_BUFFERING)
                     _isPlaying.value = true
 
-                if (playbackState == Player.STATE_ENDED) {
-                    onTrackCompleted()
-                }
-
                 if (playbackState == Player.STATE_READY) {
                     _duration.value = exoPlayer.duration.milliseconds.inWholeMilliseconds
                 }
@@ -79,8 +75,9 @@ class PlayerManager @Inject constructor(
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 val track = mediaItem?.toTrack() ?: return
                 val index = queueManager.queue.value.indexOfFirst { it.id == track.id }
+
                 if (index >= 0) {
-                    queueManager.setCurrentTrack(index)
+                    onTrackCompleted(index)
                 }
             }
 
@@ -146,14 +143,18 @@ class PlayerManager @Inject constructor(
         exoPlayer.play()
     }
 
-    fun onTrackCompleted() {
+    fun onTrackCompleted(trackIndex: Int = -1) {
         when (queueManager.loopMode.value) {
+            LoopMode.ONE -> {
+                seekTo(0)
+                play()
+            }
             LoopMode.ALL -> {
                 queueManager.skipToNext()
             }
-
-            LoopMode.ONE -> { seekTo(0) }
-            LoopMode.NONE -> {}
+            LoopMode.NONE -> {
+                queueManager.setCurrentTrack(trackIndex)
+            }
         }
     }
 

@@ -146,14 +146,10 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun playFromContext(context: QueueContext, trackId: Long) {
-        val isSameContext = context.source == _queueContext.value?.source
         _queueContext.value = context
 
-        if (!isSameContext) {
-            seekTo(0)
-        }
-
         playerManager.setQueue(context.tracks, trackId)
+        seekTo(0)
         play()
     }
 
@@ -182,6 +178,7 @@ class PlayerViewModel @Inject constructor(
     fun refreshLibrary() {
         viewModelScope.launch {
             audioRepository.refreshAll()
+            loadTracks()
             _eventFlow.emit("Library refreshed")
         }
     }

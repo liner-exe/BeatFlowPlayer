@@ -1,6 +1,8 @@
 package com.example.beatflowplayer.ui.screens.tracks_screen
 
+import android.content.ContentUris
 import android.graphics.Bitmap
+import android.provider.MediaStore
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,18 +29,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.beatflowplayer.R
 import com.example.beatflowplayer.domain.model.Track
 import com.example.beatflowplayer.domain.model.player.QueueContext
@@ -56,11 +63,15 @@ fun TrackCard(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val bitmap by produceState<Bitmap?>(initialValue = null, track) {
-        value = getAlbumCover(context, track.uri, 64, 64)
-    }
-
     val isPlaying by playerViewModel.isPlaying
+
+    val imageRequest = remember(track.uri) {
+        ImageRequest.Builder(context)
+            .data(track.uri.toUri())
+            .crossfade(false)
+            .size(100)
+            .build()
+    }
 
     OutlinedCard(
         modifier = modifier
@@ -77,12 +88,6 @@ fun TrackCard(
             modifier = Modifier
                 .background(
                     if (isCurrent) {
-//                        Brush.horizontalGradient(
-//                            listOf(
-//                                Color(0xFF3949AB),
-//                                Color(0xFF6C63FF)
-//                            )
-//                        )
                         Brush.verticalGradient(
                             listOf(Color.Transparent, Color.Transparent)
                         )
@@ -101,23 +106,16 @@ fun TrackCard(
             ) {
                 Spacer(modifier = Modifier.width(20.dp))
 
-                if (bitmap != null) {
-                    Image(
-                        bitmap = bitmap!!.asImageBitmap(),
-                        contentDescription = "Cover",
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(R.drawable.default_cover),
-                        contentDescription = "Cover",
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                    )
-                }
+                AsyncImage(
+                    model = imageRequest,
+                    placeholder = painterResource(R.drawable.default_cover),
+                    error = painterResource(R.drawable.default_cover),
+                    contentDescription = "cover",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                )
 
                 Spacer(modifier = Modifier.width(20.dp))
 
@@ -197,7 +195,10 @@ fun TrackList(
             .padding(vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        items(tracks) { track ->
+        items(
+            items = tracks,
+            key = { track -> track.id}
+        ) { track ->
             TrackCard(
                 track = track,
                 isCurrent = isTrackCurrent(track),

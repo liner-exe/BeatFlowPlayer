@@ -49,20 +49,6 @@ suspend fun getAlbumCover(
     }
 }
 
-//    val retriever = MediaMetadataRetriever()
-//
-//    return try {
-//        retriever.setDataSource(context, uri.toUri())
-//        val art = retriever.embeddedPicture
-//        art?.let {
-//            BitmapFactory.decodeByteArray(it, 0, it.size)
-//        }
-//    } catch (e: Exception) {
-//        null
-//    } finally {
-//        retriever.release()
-//    }
-
 fun calculateInSampleSize(
     width: Int,
     height: Int,

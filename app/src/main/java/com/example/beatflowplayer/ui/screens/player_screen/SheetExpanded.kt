@@ -8,7 +8,6 @@ import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -297,6 +296,15 @@ fun SheetExpandedContent(
 
 
                         Text(
+                            modifier = Modifier
+                                .basicMarquee(
+                                    iterations = Int.MAX_VALUE,
+                                    animationMode = MarqueeAnimationMode.Immediately,
+                                    repeatDelayMillis = 500,
+                                    initialDelayMillis = 0,
+                                    spacing = MarqueeSpacing(10.dp),
+                                    velocity = 20.dp
+                                ),
                             text = currentTrack!!.title,
                             color = Color.White,
                             fontSize = 22.sp,
